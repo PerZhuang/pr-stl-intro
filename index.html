@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PR AI-STL 小组介绍</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #000;
+    color: #00ff41;
+    font-family: 'Courier New', 'SimHei', monospace;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+  }
+
+  #matrix-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    opacity: 0.18;
+    z-index: 0;
+  }
+
+  #content {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 60px 80px;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .terminal-block {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .line {
+    font-size: 30px;
+    line-height: 1.85;
+    color: #00ff41;
+    white-space: pre;
+    opacity: 0;
+    text-shadow: 0 0 8px #00ff41;
+    min-height: 1.85em;
+    text-align: center;
+    width: 100%;
+  }
+
+  .line.prompt {
+    color: #00aa22;
+    font-size: 24px;
+    text-align: left;
+  }
+
+  .line.highlight {
+    color: #aaffaa;
+    font-size: 34px;
+    font-weight: bold;
+    text-shadow: 0 0 16px #00ff41, 0 0 32px #00ff41;
+    text-align: center;
+  }
+
+  .line.dim {
+    color: #005510;
+    font-size: 22px;
+    letter-spacing: 2px;
+    text-align: center;
+  }
+
+  .line.section {
+    color: #00dd33;
+    font-size: 22px;
+    font-style: italic;
+    text-align: center;
+    text-shadow: 0 0 10px #00ff41;
+  }
+
+  .line.case {
+    color: #00ee44;
+    font-size: 26px;
+    text-align: left;
+    padding-left: 40px;
+  }
+
+  .line.ending {
+    color: #00ff41;
+    font-size: 36px;
+    font-weight: bold;
+    text-shadow: 0 0 20px #00ff41, 0 0 40px #00ff41;
+    text-align: center;
+  }
+
+  .line.status {
+    color: #00ff41;
+    font-size: 24px;
+    text-align: center;
+    letter-spacing: 3px;
+    text-shadow: 0 0 12px #00ff41;
+  }
+
+  .cursor {
+    display: inline-block;
+    width: 16px;
+    height: 28px;
+    background: #00ff41;
+    vertical-align: middle;
+    animation: blink 0.7s step-end infinite;
+    box-shadow: 0 0 8px #00ff41;
+  }
+
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.04) 2px,
+      rgba(0,0,0,0.04) 4px
+    );
+    z-index: 20;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="matrix-canvas"></canvas>
+
+<div id="content">
+  <div class="terminal-block" id="terminal"></div>
+</div>
+
+<script>
+// ==================== 代码雨 ====================
+const canvas = document.getElementById('matrix-canvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const chars = '的了是在以和有大这主国经一要人我他为你上来产用工动方业种地发制也不看什么都会从等次实现数据算法分析报告媒介舆情内容传播稳定运行智能协作';
+const fontSize = 18;
+const columns = Math.floor(canvas.width / fontSize);
+const drops = Array(columns).fill(1);
+
+function drawMatrix() {
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#00ff41';
+  ctx.font = fontSize + 'px monospace';
+  for (let i = 0; i < drops.length; i++) {
+    const char = chars[Math.floor(Math.random() * chars.length)];
+    ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+    drops[i]++;
+  }
+}
+setInterval(drawMatrix, 40);
+
+// ==================== 脚本 ====================
+const script = [
+  // --- 初始化 ---
+  { type: 'prompt',  text: '> 正在初始化 PR AI-STL 协作系统...',   speed: 28 },
+  { type: 'dim',     text: '──────────────────────────────────────', speed: 6 },
+  { type: 'blank' },
+
+  // --- 开场介绍 ---
+  { type: 'normal',    text: '在 PR 工作的每个环节，',               speed: 55 },
+  { type: 'highlight', text: 'AI 正在成为新的协作伙伴。',            speed: 65 },
+  { type: 'blank' },
+  { type: 'normal',    text: 'PR AI-STL 小组，',                     speed: 55 },
+  { type: 'normal',    text: '是一支来自舆情、内容、BP、媒介各条线的', speed: 40 },
+  { type: 'highlight', text: '跨模块的虚拟团队。',                   speed: 65 },
+  { type: 'blank' },
+  { type: 'normal',    text: '我们以"最小化"原则运行，',            speed: 50 },
+  { type: 'normal',    text: '不开会、不填表，只做一件事——',         speed: 50 },
+  { type: 'highlight', text: '把 AI 工具真正用起来，',               speed: 60 },
+  { type: 'normal',    text: '探索人 + Agent 对工作流程的改变，',    speed: 40 },
+  { type: 'normal',    text: '帮 PR 的每一项工作变得更快、更有力。', speed: 40 },
+  { type: 'blank' },
+
+  { type: 'dim',     text: '──────────────────────────────────────', speed: 6 },
+  { type: 'section', text: '// 当中文成为新的编程语言',              speed: 35, delay: 300 },
+  { type: 'section', text: '// 这是我们的机会，也是我们的新起点。',  speed: 35 },
+  { type: 'blank',   delay: 1000 },
+
+  // --- 案例 ---
+  { type: 'prompt',  text: '> 上线工具（含开发中）↓',               speed: 32, delay: 200 },
+  { type: 'blank' },
+  { type: 'case',    text: '[ 舆情模块 ]   AI 数据接口 + 虾自动调取，议题追踪提速',    speed: 22 },
+  { type: 'case',    text: '[ 内容模块 ]   通稿 Agent、审校 Agent 开发中，自动化作业', speed: 22 },
+  { type: 'case',    text: '[ 内容模块 ]   理论稿 Bot 陈伯达已上线，生产效率显著提升', speed: 22 },
+  { type: 'case',    text: '[ 新媒体模块 ] 口播号小王子，新媒体分发内容自动拆分',      speed: 22 },
+  { type: 'case',    text: '[ BP 模块    ] Agent 全流程辅助，热点追踪 & 选题策划',    speed: 22 },
+  { type: 'blank' },
+
+  { type: 'dim',     text: '──────────────────────────────────────', speed: 6 },
+  { type: 'blank',   delay: 800 },
+
+  // --- 结束语 ---
+  { type: 'prompt',  text: '> 我们的目标',                           speed: 45, delay: 300 },
+  { type: 'blank' },
+  { type: 'ending',  text: '所有的工作，想想用 AI 怎么做。',         speed: 65 },
+  { type: 'ending',  text: '勇于探索，勇于试错。',                   speed: 65, delay: 200 },
+  { type: 'ending',  text: '帮更多人用好 AI。',                      speed: 65, delay: 200 },
+  { type: 'ending',  text: '做原生的 AI-PR。',                       speed: 65, delay: 200 },
+  { type: 'blank',   delay: 700 },
+  { type: 'status',  text: '// STATUS: ONLINE  ✓',                   speed: 38, delay: 400 },
+];
+
+// ==================== 引擎 ====================
+const terminal = document.getElementById('terminal');
+
+async function sleep(ms) {
+  return new Promise(r => setTimeout(r, ms));
+}
+
+async function runScript() {
+  await sleep(700);
+
+  for (let i = 0; i < script.length; i++) {
+    const item = script[i];
+    const isLast = (i === script.length - 1);
+
+    if (item.delay) await sleep(item.delay);
+
+    if (item.type === 'blank') {
+      const blank = document.createElement('div');
+      blank.className = 'line dim';
+      blank.style.opacity = '1';
+      blank.style.minHeight = '1em';
+      terminal.appendChild(blank);
+      terminal.scrollTop = terminal.scrollHeight;
+      await sleep(160);
+      continue;
+    }
+
+    const lineEl = document.createElement('div');
+    lineEl.className = 'line ' + item.type;
+    lineEl.style.opacity = '1';
+    terminal.appendChild(lineEl);
+    terminal.scrollTop = terminal.scrollHeight;
+
+    const speed = item.speed || 45;
+
+    if (isLast) {
+      const cursor = document.createElement('span');
+      cursor.className = 'cursor';
+      lineEl.appendChild(cursor);
+      for (const char of item.text) {
+        cursor.before(document.createTextNode(char));
+        await sleep(speed + (Math.random() * speed * 0.25 - speed * 0.12));
+      }
+    } else {
+      const cursor = document.createElement('span');
+      cursor.className = 'cursor';
+      lineEl.appendChild(cursor);
+      for (const char of item.text) {
+        cursor.before(document.createTextNode(char));
+        await sleep(speed + (Math.random() * speed * 0.25 - speed * 0.12));
+      }
+      cursor.remove();
+    }
+  }
+}
+
+window.addEventListener('load', runScript);
+</script>
+</body>
+</html>
