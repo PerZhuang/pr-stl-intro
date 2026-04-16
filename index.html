@@ -14,8 +14,12 @@
     width: 100vw;
     height: 100vh;
   }
+
+  /* ── Canvas layers ── */
   #matrix-canvas { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; }
   #fx-canvas     { position:fixed; top:0; left:0; width:100%; height:100%; z-index:8; pointer-events:none; }
+
+  /* ── Scanline sweep ── */
   #scanline {
     position:fixed; top:-3px; left:0; width:100%; height:3px;
     background:linear-gradient(90deg,transparent 0%,rgba(255,140,60,.15) 10%,
@@ -26,43 +30,91 @@
   @keyframes scanDown {
     0%{top:-3px;opacity:0} 4%{opacity:1} 96%{opacity:.8} 100%{top:100vh;opacity:0}
   }
+
+  /* ── CRT scanlines overlay ── */
   body::after {
     content:''; position:fixed; top:0; left:0; width:100%; height:100%;
     background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.06) 2px,rgba(0,0,0,.06) 4px);
     z-index:30; pointer-events:none;
   }
 
-  /* Female android character — left side */
-  #char-left {
-    position:fixed; left:-12px; top:50%; transform:translateY(-50%);
-    width:300px; height:600px; z-index:12; pointer-events:none;
-    animation:charFloat 6s ease-in-out infinite;
+  /* ── Joi character image ── */
+  #joi-img {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 56vw;
+    height: 100vh;
+    object-fit: cover;
+    object-position: left center;
+    z-index: 12;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    opacity: 0.92;
+    /* fade out right edge (background) and top/bottom edges */
+    -webkit-mask-image:
+      linear-gradient(to right,
+        black    0%,
+        black   52%,
+        rgba(0,0,0,.55) 68%,
+        transparent 84%),
+      linear-gradient(to bottom,
+        transparent  0%,
+        black        6%,
+        black       92%,
+        transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask-image:
+      linear-gradient(to right,
+        black    0%,
+        black   52%,
+        rgba(0,0,0,.55) 68%,
+        transparent 84%),
+      linear-gradient(to bottom,
+        transparent  0%,
+        black        6%,
+        black       92%,
+        transparent 100%);
+    mask-composite: intersect;
+    /* subtle float animation */
+    animation: joiFloat 7s ease-in-out infinite;
+    filter: saturate(1.15) brightness(1.05);
   }
-  @keyframes charFloat {
-    0%,100%{transform:translateY(-50%) translateX(0px)}
-    50%{transform:translateY(-50%) translateX(-6px)}
+  @keyframes joiFloat {
+    0%,100% { transform: translateY(0px) scale(1); }
+    50%     { transform: translateY(-8px) scale(1.008); }
   }
 
-  /* Content — padding-left reserves space for character */
+  /* ── Content area ── */
   #content {
     position:relative; z-index:10; width:100%; height:100%;
-    display:flex; flex-direction:column; justify-content:flex-start; align-items:center;
-    padding:60px 80px 60px 295px; overflow-y:auto; overflow-x:hidden;
+    display:flex; flex-direction:column;
+    justify-content:flex-start; align-items:center;
+    padding: 60px 80px 60px 50vw;
+    overflow-y:auto; overflow-x:hidden;
   }
-  .terminal-block { width:100%; max-width:1100px; display:flex; flex-direction:column; align-items:center; }
+  .terminal-block {
+    width:100%; max-width:900px;
+    display:flex; flex-direction:column; align-items:center;
+  }
+
+  /* ── Line styles ── */
   .line {
-    font-size:30px; line-height:1.85; color:#00ff41; white-space:pre; opacity:0;
-    text-shadow:0 0 8px #00ff41; min-height:1.85em; text-align:center; width:100%;
+    font-size:28px; line-height:1.85; color:#00ff41; white-space:pre-wrap;
+    opacity:0; text-shadow:0 0 8px #00ff41;
+    min-height:1.85em; text-align:center; width:100%;
   }
-  .line.prompt   { color:#00aa22; font-size:24px; text-align:left; }
-  .line.highlight{ color:#aaffaa; font-size:34px; font-weight:bold;
+  .line.prompt   { color:#00aa22; font-size:22px; text-align:left; }
+  .line.highlight{ color:#aaffaa; font-size:32px; font-weight:bold;
     text-shadow:0 0 16px #00ff41,0 0 32px #00ff41; text-align:center; }
-  .line.dim      { color:#005510; font-size:22px; letter-spacing:2px; text-align:center; }
-  .line.section  { color:#00dd33; font-size:22px; font-style:italic; text-align:center; text-shadow:0 0 10px #00ff41; }
-  .line.case     { color:#00ee44; font-size:26px; text-align:left; padding-left:40px; }
-  .line.ending   { color:#00ff41; font-size:36px; font-weight:bold;
+  .line.dim      { color:#005510; font-size:20px; letter-spacing:2px; text-align:center; }
+  .line.section  { color:#00dd33; font-size:20px; font-style:italic;
+    text-align:center; text-shadow:0 0 10px #00ff41; }
+  .line.case     { color:#00ee44; font-size:22px; text-align:left; padding-left:20px; }
+  .line.ending   { color:#00ff41; font-size:32px; font-weight:bold;
     text-shadow:0 0 20px #00ff41,0 0 40px #00ff41; text-align:center; }
-  .line.status   { color:#00ff41; font-size:24px; text-align:center; letter-spacing:3px; text-shadow:0 0 12px #00ff41; }
+  .line.status   { color:#00ff41; font-size:22px; text-align:center;
+    letter-spacing:3px; text-shadow:0 0 12px #00ff41; }
 
   @keyframes rgbGlitch {
     0%,100%{text-shadow:0 0 8px #00ff41;transform:none}
@@ -78,143 +130,26 @@
 </style>
 </head>
 <body>
+
 <canvas id="matrix-canvas"></canvas>
 <canvas id="fx-canvas"></canvas>
 <div id="scanline"></div>
 
-<!-- Female android — left side, facing right, arm tracks active text line -->
-<svg id="char-left" viewBox="0 0 370 640" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <filter id="pg" x="-60%" y="-60%" width="220%" height="220%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="b"/>
-      <feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-    <filter id="pg2" x="-100%" y="-100%" width="300%" height="300%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="11" result="b"/>
-      <feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-    <radialGradient id="aura" cx="58%" cy="36%" r="62%">
-      <stop offset="0%" stop-color="#bb33ff" stop-opacity=".32"/>
-      <stop offset="55%" stop-color="#7711bb" stop-opacity=".12"/>
-      <stop offset="100%" stop-color="#000" stop-opacity="0"/>
-    </radialGradient>
-    <radialGradient id="ptip" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#fff" stop-opacity="1"/>
-      <stop offset="38%" stop-color="#ff88ff" stop-opacity=".9"/>
-      <stop offset="100%" stop-color="#cc22ff" stop-opacity="0"/>
-    </radialGradient>
-  </defs>
-
-  <ellipse cx="155" cy="240" rx="155" ry="220" fill="url(#aura)"/>
-
-  <!-- HAIR: dark fill + blue-purple glow edges, bob cut -->
-  <path d="M 52 298 C 34 274,26 230,30 186 C 34 138,54 96,94 66 C 130 38,176 26,216 36
-           C 246 44,266 62,270 84 C 276 106,268 128,256 142 L 228 146
-           C 238 134,246 116,242 98 C 236 72,214 56,186 50 C 154 44,116 56,90 80
-           C 64 104,52 142,52 180 C 52 214,60 250,70 270 Z"
-        fill="#0e051f" opacity=".96"/>
-  <path d="M 52 298 C 50 314,50 328,54 340 C 58 348,64 350,70 344 L 74 318 C 70 306,64 298,60 292 Z"
-        fill="#0e051f" opacity=".92"/>
-  <path d="M 256 142 C 254 160,248 176,240 188 C 232 200,220 208,210 212
-           L 203 198 C 213 194,222 188,228 178 C 234 166,238 152,238 142 Z"
-        fill="#0e051f" opacity=".94"/>
-  <path d="M 52 298 C 34 274,26 230,30 186 C 34 138,54 96,94 66 C 130 38,176 26,216 36 C 246 44,266 62,270 84"
-        stroke="#4455ee" stroke-width="2.5" fill="none" opacity=".62" filter="url(#pg)"/>
-  <path d="M 52 298 C 50 316,52 334,58 344" stroke="#5533bb" stroke-width="2" fill="none" opacity=".55" filter="url(#pg)"/>
-  <path d="M 256 142 C 252 162,244 180,232 194 C 222 206,208 214,202 214"
-        stroke="#4455ee" stroke-width="2" fill="none" opacity=".5" filter="url(#pg)"/>
-
-  <!-- FACE: pink-neon profile outline -->
-  <path d="M 258 142 C 262 156,262 170,256 182 C 252 191,252 198,256 208
-           C 260 220,260 230,254 240 C 248 250,238 256,226 258
-           C 214 260,202 256,194 248 C 186 240,182 228,184 216
-           C 186 203,190 192,188 180 C 186 170,180 160,178 150"
-        stroke="rgba(255,160,220,.68)" stroke-width="2.2" fill="none"/>
-  <path d="M 256 196 C 262 203,264 211,258 217 C 254 221,248 222,244 224"
-        stroke="rgba(255,160,220,.48)" stroke-width="1.5" fill="none"/>
-  <path d="M 250 246 C 256 242,263 244,266 249 C 262 255,253 258,248 254"
-        stroke="rgba(255,70,180,.72)" stroke-width="2" fill="rgba(255,70,180,.18)"/>
-  <ellipse cx="253" cy="164" rx="6" ry="4" fill="#1a0035" stroke="rgba(210,90,255,.78)" stroke-width="1.3"/>
-  <ellipse cx="253" cy="164" rx="3" ry="2.5" fill="rgba(180,60,255,.65)"/>
-  <path d="M 246 161 C 250 155,256 155,260 161" stroke="#0e051f" stroke-width="3.5" fill="none"/>
-  <path d="M 258 142 C 262 156,262 170,256 182 C 252 191,252 198,256 208 C 260 220,260 230,254 240 C 248 250,238 256,226 258"
-        stroke="rgba(255,110,220,.38)" stroke-width="5" fill="none" filter="url(#pg)"/>
-
-  <!-- NECK -->
-  <path d="M 194 258 C 188 272,184 286,184 300 C 184 310,186 318,190 322"
-        stroke="rgba(255,140,210,.55)" stroke-width="13" fill="none" stroke-linecap="round"/>
-  <path d="M 194 258 C 188 272,184 286,184 300 C 184 310,186 318,190 322"
-        stroke="rgba(255,80,200,.35)" stroke-width="2" fill="none" filter="url(#pg)"/>
-
-  <!-- SHOULDER -->
-  <path d="M 190 322 C 188 330,183 340,174 346 C 162 354,144 356,122 352
-           C 98 348,72 338,50 326 C 32 316,18 304,14 292"
-        stroke="rgba(255,130,205,.42)" stroke-width="22" fill="none" stroke-linecap="round"/>
-  <path d="M 190 322 C 188 330,183 340,174 346 C 162 354,144 356,122 352 C 98 348,72 338,50 326"
-        stroke="rgba(255,80,200,.28)" stroke-width="2" fill="none" filter="url(#pg)"/>
-
-  <!-- ARM GROUP — pivot at (150, 308) — rotated by JS to track active line -->
-  <g id="char-arm-group">
-    <path d="M 150 308 C 175 304,205 300,232 298 C 255 296,274 296,290 298"
-          stroke="rgba(255,140,210,.54)" stroke-width="15" fill="none" stroke-linecap="round"/>
-    <path d="M 150 308 C 175 304,205 300,232 298 C 255 296,274 296,290 298"
-          stroke="rgba(255,180,230,.22)" stroke-width="22" fill="none" stroke-linecap="round"/>
-    <path d="M 290 298 C 300 298,308 300,314 304 C 318 307,318 311,316 315"
-          stroke="rgba(255,140,210,.52)" stroke-width="12" fill="none" stroke-linecap="round"/>
-    <ellipse cx="313" cy="318" rx="12" ry="9"
-             fill="rgba(255,148,215,.34)" stroke="rgba(255,140,210,.52)" stroke-width="1.2"/>
-    <!-- index finger pointing right -->
-    <path d="M 318 313 L 368 311 C 374 311,378 313,378 316 C 378 319,374 321,368 321 L 318 323 Z"
-          fill="rgba(255,148,215,.52)" stroke="rgba(255,140,210,.62)" stroke-width="1"/>
-    <!-- curled fingers -->
-    <path d="M 314 323 C 312 331,312 339,315 344 C 317 347,321 347,323 343"
-          stroke="rgba(255,128,205,.40)" stroke-width="8" fill="none" stroke-linecap="round"/>
-    <path d="M 310 328 C 306 337,306 346,310 351 C 312 354,317 353,318 349"
-          stroke="rgba(255,128,205,.34)" stroke-width="7" fill="none" stroke-linecap="round"/>
-    <path d="M 306 331 C 301 340,302 350,306 355 C 309 358,313 356,314 352"
-          stroke="rgba(255,128,205,.28)" stroke-width="6" fill="none" stroke-linecap="round"/>
-    <!-- fingertip glow -->
-    <circle cx="380" cy="316" r="32" fill="#cc22ff" opacity=".10" filter="url(#pg2)">
-      <animate attributeName="opacity" values=".07;.18;.07" dur="2.1s" repeatCount="indefinite"/>
-    </circle>
-    <circle cx="380" cy="316" r="17" fill="#ff44cc" opacity=".22" filter="url(#pg)">
-      <animate attributeName="opacity" values=".15;.32;.15" dur="2.1s" repeatCount="indefinite"/>
-    </circle>
-    <circle cx="380" cy="316" r="7.5" fill="url(#ptip)" opacity=".93"/>
-    <circle cx="380" cy="316" r="3" fill="#fff" opacity=".97"/>
-    <ellipse cx="380" cy="316" rx="30" ry="11"
-             stroke="#ff44cc" stroke-width="1.2" fill="none" opacity=".42" filter="url(#pg)">
-      <animate attributeName="rx" values="28;36;28" dur="2.1s" repeatCount="indefinite"/>
-    </ellipse>
-    <ellipse cx="380" cy="316" rx="22" ry="8"
-             stroke="#aa66ff" stroke-width=".9" fill="none" opacity=".50">
-      <animate attributeName="rx" values="20;28;20" dur="2.1s" repeatCount="indefinite"/>
-    </ellipse>
-    <line x1="380" y1="309" x2="380" y2="296" stroke="#fff" stroke-width=".6" opacity=".42"/>
-    <line x1="380" y1="309" x2="366" y2="301" stroke="#ff44cc" stroke-width=".5" opacity=".30"/>
-    <line x1="380" y1="309" x2="394" y2="301" stroke="#ff44cc" stroke-width=".5" opacity=".30"/>
-  </g>
-
-  <!-- sparkle particles -->
-  <circle cx="278" cy="52"  r="1.5" fill="#cc88ff" opacity=".7"><animate attributeName="opacity" values=".7;.15;.7"  dur="1.9s" repeatCount="indefinite"/></circle>
-  <circle cx="260" cy="80"  r="1"   fill="#8844ff" opacity=".6"><animate attributeName="opacity" values=".6;.1;.6"   dur="2.4s" repeatCount="indefinite"/></circle>
-  <circle cx="238" cy="42"  r="1.5" fill="#bb66ff" opacity=".5"><animate attributeName="opacity" values=".5;.12;.5"  dur="1.6s" repeatCount="indefinite"/></circle>
-  <circle cx="28"  cy="176" r="1.5" fill="#6633cc" opacity=".5"><animate attributeName="opacity" values=".5;.08;.5"  dur="2.2s" repeatCount="indefinite"/></circle>
-  <circle cx="38"  cy="128" r="1"   fill="#8844ff" opacity=".4"><animate attributeName="opacity" values=".4;.05;.4"  dur="3.1s" repeatCount="indefinite"/></circle>
-  <circle cx="298" cy="348" r="1.5" fill="#ff66cc" opacity=".45"><animate attributeName="opacity" values=".45;.1;.45" dur="2.7s" repeatCount="indefinite"/></circle>
-  <circle cx="178" cy="28"  r="1"   fill="#9955ff" opacity=".6"><animate attributeName="opacity" values=".6;.1;.6"   dur="2.9s" repeatCount="indefinite"/></circle>
-</svg>
+<!-- Joi — mix-blend-mode:screen makes dark bg transparent, neon character floats -->
+<img id="joi-img" src="joi.jpg" alt="">
 
 <div id="content">
   <div class="terminal-block" id="terminal"></div>
 </div>
 
 <script>
+// ══════════════════════════════════════════════
 // 1. MATRIX RAIN
+// ══════════════════════════════════════════════
 const matCanvas = document.getElementById('matrix-canvas');
 const mctx = matCanvas.getContext('2d');
 matCanvas.width = window.innerWidth; matCanvas.height = window.innerHeight;
-const CHARS = '\u7684\u4e86\u662f\u5728\u548c\u6709\u5927\u8fd9\u56fd\u7ecf\u4e00\u8981\u4eba\u5b9e\u73b0\u6570\u636e\u7b97\u6cd5\u5206\u6790\u8206\u60c5\u5185\u5bb9\u4f20\u64ad\u8fd0\u884c\u667a\u80fd\u534f\u4f5c01\u30a2\u30a4\u30a6\u30ab\u03a9\u2211\u03bb\u2592\u2593';
+const CHARS = '\u7684\u4e86\u662f\u5728\u548c\u6709\u5927\u8fd9\u56fd\u7ecf\u8981\u4eba\u5b9e\u73b0\u6570\u636e\u7b97\u6cd5\u5206\u6790\u8206\u60c5\u5185\u5bb9\u4f20\u64ad\u8fd0\u884c\u667a\u80fd\u534f\u4f5c01\u30a2\u30a4\u30a6\u30ab\u03a9\u2211\u03bb\u2592\u2593';
 const FS = 17, COLS = Math.floor(matCanvas.width / FS);
 const streams = Array.from({length:COLS}, () => ({
   y: Math.random() * matCanvas.height / FS,
@@ -230,9 +165,9 @@ function drawMatrix() {
   streams.forEach((s,i) => {
     const ch = CHARS[Math.floor(Math.random() * CHARS.length)], burst = i === burstCol;
     let color, alpha;
-    if (s.hue==='orange')     {color='#ff8c42'; alpha=burst?.55:(s.bright?.32:.19);}
-    else if (s.hue==='blue')  {color='#44aaff'; alpha=burst?.50:(s.bright?.28:.17);}
-    else                      {color='#00ff41'; alpha=burst?.60:(s.bright?.26:.17);}
+    if (s.hue==='orange')    {color='#ff8c42';alpha=burst?.55:(s.bright?.32:.19);}
+    else if (s.hue==='blue') {color='#44aaff';alpha=burst?.50:(s.bright?.28:.17);}
+    else                     {color='#00ff41';alpha=burst?.60:(s.bright?.26:.17);}
     mctx.globalAlpha=alpha; mctx.fillStyle=color;
     mctx.fillText(ch, i*FS, s.y*FS); mctx.globalAlpha=1;
     s.y += s.speed;
@@ -243,11 +178,14 @@ function drawMatrix() {
 }
 setInterval(drawMatrix, 40);
 
-// 2. FX CANVAS
+// ══════════════════════════════════════════════
+// 2. FX CANVAS — ripples & particles
+// ══════════════════════════════════════════════
 const fxCanvas = document.getElementById('fx-canvas');
 const fx = fxCanvas.getContext('2d');
 fxCanvas.width = window.innerWidth; fxCanvas.height = window.innerHeight;
 const ripples=[], particles=[];
+
 class Ripple {
   constructor(x,y){ this.x=x;this.y=y;this.life=1;
     this.rings=[{r:0,speed:4.2,rgba:'255,140,60',lw:2},{r:0,speed:2.5,rgba:'200,80,255',lw:1.4},{r:0,speed:1.4,rgba:'0,255,100',lw:1}]; }
@@ -263,50 +201,38 @@ class Ripple {
 class Particle {
   constructor(x,y){ const a=Math.random()*Math.PI*2,s=1.8+Math.random()*4.5;
     this.x=x;this.y=y;this.vx=Math.cos(a)*s;this.vy=Math.sin(a)*s;
-    this.life=.8+Math.random()*.4;this.size=1.2+Math.random()*3;
+    this.life=.8+Math.random()*.4; this.size=1.2+Math.random()*3;
     const r=Math.random(); this.color=r<.45?'#ff66cc':r<.75?'#aa44ff':'#00ff88'; }
   update(){ this.x+=this.vx;this.y+=this.vy;this.vy+=.07;this.vx*=.98;this.life-=.022;this.size*=.974; }
   draw(){ fx.save();fx.globalAlpha=Math.max(0,this.life);fx.shadowBlur=10;fx.shadowColor=this.color;
     fx.fillStyle=this.color;fx.beginPath();fx.arc(this.x,this.y,Math.max(0,this.size),0,Math.PI*2);fx.fill();fx.restore(); }
   get dead(){ return this.life<=0||this.size<.15; }
 }
-(function fxLoop(){ fx.clearRect(0,0,fxCanvas.width,fxCanvas.height);
+(function fxLoop(){
+  fx.clearRect(0,0,fxCanvas.width,fxCanvas.height);
   for(let i=ripples.length-1;i>=0;i--){ripples[i].update();ripples[i].draw();if(ripples[i].dead)ripples.splice(i,1);}
   for(let i=particles.length-1;i>=0;i--){particles[i].update();particles[i].draw();if(particles[i].dead)particles.splice(i,1);}
-  requestAnimationFrame(fxLoop); })();
-
-// 3. ARM TRACKING — smooth lerp toward active line Y
-const ARM_PIVOT={svgX:150,svgY:308}, CHAR_VB={w:370,h:640};
-let armTarget=0, armCurrent=0;
-const armGroup=document.getElementById('char-arm-group');
-(function armLoop(){
-  armCurrent+=(armTarget-armCurrent)*.055;
-  armGroup.setAttribute('transform',`rotate(${armCurrent.toFixed(2)},${ARM_PIVOT.svgX},${ARM_PIVOT.svgY})`);
-  requestAnimationFrame(armLoop);
+  requestAnimationFrame(fxLoop);
 })();
-function aimArmAt(screenY){
-  const el=document.getElementById('char-left'); if(!el)return;
-  const r=el.getBoundingClientRect();
-  const px=r.left+ARM_PIVOT.svgX*(r.width/CHAR_VB.w);
-  const py=r.top +ARM_PIVOT.svgY*(r.height/CHAR_VB.h);
-  const dx=window.innerWidth*.62-px, dy=screenY-py;
-  armTarget=Math.max(-38,Math.min(38,Math.atan2(dy,dx)*180/Math.PI));
-}
 
-// 4. CLICK
-document.addEventListener('click',e=>{
-  ripples.push(new Ripple(e.clientX,e.clientY));
-  for(let i=0;i<22;i++) particles.push(new Particle(e.clientX,e.clientY));
-  document.querySelectorAll('.line').forEach(el=>{
-    const r=el.getBoundingClientRect();
-    if(Math.abs((r.top+r.bottom)/2-e.clientY)<120){
+// ══════════════════════════════════════════════
+// 3. CLICK INTERACTION
+// ══════════════════════════════════════════════
+document.addEventListener('click', e => {
+  ripples.push(new Ripple(e.clientX, e.clientY));
+  for(let i=0;i<22;i++) particles.push(new Particle(e.clientX, e.clientY));
+  document.querySelectorAll('.line').forEach(el => {
+    const r = el.getBoundingClientRect();
+    if(Math.abs((r.top+r.bottom)/2 - e.clientY) < 120){
       el.classList.add('glitch-anim');
       el.addEventListener('animationend',()=>el.classList.remove('glitch-anim'),{once:true});
     }
   });
 });
 
-// 5. PERIODIC GLITCH
+// ══════════════════════════════════════════════
+// 4. PERIODIC AUTO-GLITCH
+// ══════════════════════════════════════════════
 (function autoGlitch(){
   const vis=Array.from(document.querySelectorAll('.line')).filter(el=>parseFloat(el.style.opacity)>0);
   if(vis.length){const t=vis[Math.floor(Math.random()*vis.length)];
@@ -315,17 +241,21 @@ document.addEventListener('click',e=>{
   setTimeout(autoGlitch,2800+Math.random()*4200);
 })();
 
-// 6. FLICKER
+// ══════════════════════════════════════════════
+// 5. AMBIENT FLICKER
+// ══════════════════════════════════════════════
 (function flicker(){
   matCanvas.style.opacity=(.16+Math.random()*.08).toFixed(3);
   setTimeout(flicker,80+Math.random()*320);
 })();
 
-// 7. SCRIPT ENGINE — auto-scroll FIXED (scrolls #content, not #terminal)
-const content=document.getElementById('content');
-const terminal=document.getElementById('terminal');
+// ══════════════════════════════════════════════
+// 6. SCRIPT ENGINE  (auto-scroll fixed)
+// ══════════════════════════════════════════════
+const content  = document.getElementById('content');
+const terminal = document.getElementById('terminal');
 const script=[
-  {type:'prompt',   text:'> \u6b63\u5728\u521d\u59cb\u5316 PR AI-STL \u534f\u4f5c\u7cfb\u7edf...', speed:28},
+  {type:'prompt',   text:'> \u6b63\u5728\u521d\u59cb\u5316 PR AI-STL \u534f\u4f5c\u7cfb\u7edf...',speed:28},
   {type:'dim',      text:'\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500',speed:6},
   {type:'blank'},
   {type:'normal',   text:'\u5728 PR \u5de5\u4f5c\u7684\u6bcf\u4e2a\u73af\u8282\uff0c',speed:55},
@@ -375,20 +305,19 @@ async function runScript(){
       const b=document.createElement('div');
       b.className='line dim'; b.style.opacity='1'; b.style.minHeight='1em';
       terminal.appendChild(b);
-      content.scrollTop=content.scrollHeight;  // FIXED
+      content.scrollTop=content.scrollHeight;
       await sleep(160); continue;
     }
     const lineEl=document.createElement('div');
     lineEl.className='line '+item.type; lineEl.style.opacity='1';
     terminal.appendChild(lineEl);
-    content.scrollTop=content.scrollHeight;    // FIXED
-    setTimeout(()=>{const r=lineEl.getBoundingClientRect();if(r.height>0)aimArmAt(r.top+r.height/2);},80);
+    content.scrollTop=content.scrollHeight;
     const cursor=document.createElement('span');
     cursor.className='cursor'; lineEl.appendChild(cursor);
     const speed=item.speed||45;
     for(const char of item.text){
       cursor.before(document.createTextNode(char));
-      content.scrollTop=content.scrollHeight;  // keep current line visible while typing
+      content.scrollTop=content.scrollHeight;
       await sleep(speed+(Math.random()*speed*.25-speed*.12));
     }
     if(!isLast) cursor.remove();
