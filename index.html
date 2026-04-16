@@ -182,9 +182,161 @@
     box-shadow:0 0 8px #00ff41;
   }
   @keyframes blink { 50%{ opacity:0 } }
+
+  /* ══ BOOT SCREEN ══ */
+  #boot-screen {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: #000;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  /* subtle scanline texture over boot */
+  #boot-screen::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 2px, rgba(0,255,65,.025) 2px, rgba(0,255,65,.025) 4px
+    );
+    pointer-events: none;
+  }
+  #boot-inner {
+    width: min(640px, 88vw);
+    font-family: 'Courier New', monospace;
+    color: #00ff41;
+  }
+  #boot-title {
+    font-size: clamp(22px, 4vw, 38px);
+    font-weight: bold;
+    letter-spacing: 0.18em;
+    text-align: center;
+    color: #00ff88;
+    text-shadow: 0 0 18px #00ff88, 0 0 40px rgba(0,255,100,.5);
+    margin-bottom: 6px;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    animation: titlePulse 2.5s ease-in-out infinite;
+  }
+  @keyframes titlePulse {
+    0%,100% { text-shadow: 0 0 18px #00ff88, 0 0 40px rgba(0,255,100,.5); }
+    50%      { text-shadow: 0 0 28px #00ff88, 0 0 60px rgba(0,255,120,.8), 0 0 80px rgba(0,255,80,.3); }
+  }
+  .boot-bracket { color: #ff8800; text-shadow: 0 0 12px #ff8800; }
+  #boot-subtitle {
+    display: block;
+    font-size: clamp(11px, 1.8vw, 14px);
+    letter-spacing: 0.35em;
+    color: #00cc44;
+    text-align: center;
+    margin-top: 4px;
+    text-shadow: none;
+    animation: subtitleBlink 1.2s step-end infinite;
+  }
+  @keyframes subtitleBlink { 50% { opacity: 0.3 } }
+  #boot-divider {
+    color: #004422;
+    font-size: 13px;
+    letter-spacing: 1px;
+    margin: 14px 0 12px;
+    text-shadow: none;
+  }
+  #boot-log {
+    min-height: 180px;
+    font-size: clamp(11px, 1.6vw, 13px);
+    line-height: 1.9;
+    color: #00aa33;
+    letter-spacing: 0.04em;
+  }
+  .boot-line {
+    opacity: 0;
+    animation: bootLineIn 0.18s ease forwards;
+  }
+  @keyframes bootLineIn {
+    from { opacity: 0; transform: translateX(-8px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  #boot-progress-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 22px;
+  }
+  #boot-bar-track {
+    flex: 1;
+    height: 10px;
+    background: #001a0a;
+    border: 1px solid #003318;
+    border-radius: 2px;
+    position: relative;
+    overflow: hidden;
+  }
+  #boot-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #006622, #00ff66, #00ff88);
+    border-radius: 2px;
+    box-shadow: 0 0 8px #00ff66, 0 0 18px rgba(0,255,80,.4);
+    transition: width 0.08s linear;
+    position: relative;
+    z-index: 1;
+  }
+  /* moving shimmer on bar */
+  #boot-bar-fill::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 40px; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent);
+    animation: barShimmer 0.6s linear infinite;
+  }
+  @keyframes barShimmer {
+    from { transform: translateX(-40px); }
+    to   { transform: translateX(0px); }
+  }
+  #boot-pct {
+    font-size: 13px;
+    color: #00ff66;
+    min-width: 36px;
+    text-align: right;
+    text-shadow: 0 0 8px #00ff66;
+    font-weight: bold;
+    letter-spacing: 0.05em;
+  }
+  @keyframes bootFlash {
+    0%   { opacity: 1; }
+    30%  { opacity: 0; background: #0a2a0a; }
+    60%  { opacity: 1; }
+    80%  { opacity: 0.4; }
+    100% { opacity: 1; }
+  }
 </style>
 </head>
 <body>
+
+<!-- ══ BOOT SCREEN ══ -->
+<div id="boot-screen">
+  <div id="boot-inner">
+    <div id="boot-title">
+      <span class="boot-bracket">[</span>
+      PR&nbsp;AI&#8209;STL&nbsp;TEAM
+      <span class="boot-bracket">]</span>
+      <span id="boot-subtitle">INITIALIZING</span>
+    </div>
+    <div id="boot-divider">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
+    <div id="boot-log"></div>
+    <div id="boot-progress-wrap">
+      <div id="boot-bar-track">
+        <div id="boot-bar-fill"></div>
+        <div id="boot-bar-glow"></div>
+      </div>
+      <span id="boot-pct">0%</span>
+    </div>
+  </div>
+</div>
 
 <canvas id="matrix-canvas"></canvas>
 <canvas id="fx-canvas"></canvas>
@@ -461,7 +613,82 @@ async function runScript() {
   }
 }
 
-window.addEventListener('load', runScript);
+// ════════════════════════════════════════
+// 8. BOOT SCREEN
+// ════════════════════════════════════════
+async function runBoot() {
+  const boot = document.getElementById('boot-screen');
+  const bootLog = document.getElementById('boot-log');
+  const bar = document.getElementById('boot-bar-fill');
+  const pct = document.getElementById('boot-pct');
+  const bootTitle = document.getElementById('boot-title');
+
+  const logLines = [
+    '> SYSTEM INIT ...................... OK',
+    '> LOADING AI CORE ................ OK',
+    '> PR MODULE DETECTED ............. OK',
+    '> CONNECTING STL AGENTS .......... OK',
+    '> LOADING CONTENT ENGINE ......... OK',
+    '> MATRIX RENDERER ................ OK',
+    '> CALIBRATING INTERFACE .......... OK',
+    '> ESTABLISHING SECURE CHANNEL .... OK',
+    '> ALL SYSTEMS NOMINAL',
+  ];
+
+  // Title blink-in
+  await sleep(200);
+  bootTitle.style.opacity = '1';
+  await sleep(300);
+
+  // Print log lines while progress bar fills
+  let progress = 0;
+  const totalDuration = 2800; // ms for full bar
+  const startTime = Date.now();
+
+  // Animate progress bar
+  function animateBar() {
+    const elapsed = Date.now() - startTime;
+    progress = Math.min(100, Math.round((elapsed / totalDuration) * 100));
+    bar.style.width = progress + '%';
+    pct.textContent = progress + '%';
+    if (progress < 100) requestAnimationFrame(animateBar);
+  }
+  requestAnimationFrame(animateBar);
+
+  // Print log lines at intervals
+  for (let i = 0; i < logLines.length; i++) {
+    await sleep(totalDuration / logLines.length);
+    const div = document.createElement('div');
+    div.className = 'boot-line';
+    div.textContent = logLines[i];
+    bootLog.appendChild(div);
+    // Glitch color on last line
+    if (i === logLines.length - 1) {
+      div.style.color = '#00ff88';
+      div.style.fontWeight = 'bold';
+      div.style.textShadow = '0 0 12px #00ff88, 0 0 24px #00ff88';
+    }
+  }
+
+  // Wait for bar to truly reach 100%
+  await sleep(400);
+
+  // Flash effect
+  boot.style.animation = 'bootFlash 0.35s ease-out forwards';
+  await sleep(180);
+
+  // Slide up and out
+  boot.style.transition = 'transform 0.55s cubic-bezier(0.7,0,1,1), opacity 0.55s ease';
+  boot.style.transform = 'translateY(-100%)';
+  boot.style.opacity = '0';
+  await sleep(560);
+  boot.style.display = 'none';
+
+  // Now start main script
+  runScript();
+}
+
+window.addEventListener('load', runBoot);
 </script>
 </body>
 </html>
