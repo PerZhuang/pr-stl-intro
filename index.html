@@ -41,25 +41,25 @@
   #joi-img {
     position: fixed;
     left: -5px;
-    top: 0;
-    width: 52vw;          /* 扩宽：完整显示面部+手指 */
-    height: 100vh;
-    object-fit: cover;
-    object-position: 35% 30%;  /* 显示面部+手指：往右下移，让手指完整入镜 */
+    bottom: 0;
+    /* 图片原始比例 2000:1124 ≈ 16:9，让宽度撑满左侧65vw，高度自适应 */
+    width: 65vw;
+    height: auto;
+    object-fit: unset;
     mix-blend-mode: screen;
     opacity: .92;
     filter: saturate(1.12) brightness(1.02);
     z-index: 12;
     pointer-events: none;
     animation: joiFloat 7s ease-in-out infinite;
-    /* 右侧渐隐：手指尖自然融入文字区，左侧保留完整人像 */
+    /* 右侧渐隐：手指尖附近自然消融进文字区 */
     -webkit-mask-image:
-      linear-gradient(to right, black 0%, black 50%, rgba(0,0,0,.3) 66%, transparent 80%),
-      linear-gradient(to bottom, transparent 0%, black 5%, black 93%, transparent 100%);
+      linear-gradient(to right, black 0%, black 48%, rgba(0,0,0,.3) 60%, transparent 72%),
+      linear-gradient(to bottom, transparent 0%, black 8%, black 90%, transparent 100%);
     -webkit-mask-composite: source-in;
     mask-image:
-      linear-gradient(to right, black 0%, black 50%, rgba(0,0,0,.3) 66%, transparent 80%),
-      linear-gradient(to bottom, transparent 0%, black 5%, black 93%, transparent 100%);
+      linear-gradient(to right, black 0%, black 48%, rgba(0,0,0,.3) 60%, transparent 72%),
+      linear-gradient(to bottom, transparent 0%, black 8%, black 90%, transparent 100%);
     mask-composite: intersect;
   }
   @keyframes joiFloat {
@@ -70,7 +70,7 @@
   /* ── Fingertip glow — follows active line ── */
   #fingertip {
     position: fixed;
-    left: 48vw;   /* 与图片宽度52vw对应，手指尖约在48vw处 */
+    left: 58vw;   /* 图片65vw宽，手指尖约在图片60%处≈58vw */
     top: 50vh;
     width: 0; height: 0;
     z-index: 16;
@@ -116,7 +116,7 @@
     width: 100%; height: 100%;
     display: flex; flex-direction: column;
     justify-content: flex-start; align-items: center;
-    padding: 55px 60px 55px 50vw;  /* 为更宽的图片让路 */
+    padding: 55px 60px 55px 58vw;  /* 为65vw宽的图片让路，内容从58vw开始 */
     overflow-y: auto; overflow-x: hidden;
   }
   .terminal-block {
@@ -278,8 +278,8 @@ class Particle {
 // ── TOUCH BEAM — drawn each frame ──
 let beamY = window.innerHeight * .5;    // current (animated) beam Y
 let beamTargetY = window.innerHeight * .5;
-const BEAM_X = window.innerWidth * .48;  // fingertip X = 48vw（与图片宽度52vw对应）
-const TEXT_X  = window.innerWidth * .52; // beam延伸到文字区起始
+const BEAM_X = window.innerWidth * .58;  // fingertip X = 58vw（手指尖位置）
+const TEXT_X  = window.innerWidth * .62; // beam延伸到文字区起始
 
 function drawBeam() {
   beamY += (beamTargetY - beamY) * .06;
