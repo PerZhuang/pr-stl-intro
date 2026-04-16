@@ -6,7 +6,6 @@
 <title>PR AI-STL 小组介绍</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
   body {
     background: #000;
     color: #00ff41;
@@ -15,333 +14,195 @@
     width: 100vw;
     height: 100vh;
   }
-
-  /* ── Canvas layers ── */
-  #matrix-canvas {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    z-index: 0;
-  }
-
-  #fx-canvas {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    z-index: 8;
-    pointer-events: none;
-  }
-
-  /* ── Scanline sweep (Blade Runner amber) ── */
+  #matrix-canvas { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; }
+  #fx-canvas     { position:fixed; top:0; left:0; width:100%; height:100%; z-index:8; pointer-events:none; }
   #scanline {
-    position: fixed;
-    top: -3px;
-    left: 0;
-    width: 100%;
-    height: 3px;
-    background: linear-gradient(90deg,
-      transparent 0%,
-      rgba(255,140,60,0.15) 10%,
-      rgba(255,140,60,0.85) 50%,
-      rgba(255,140,60,0.15) 90%,
-      transparent 100%);
-    box-shadow: 0 0 18px rgba(255,140,60,0.7), 0 0 40px rgba(255,100,20,0.3);
-    z-index: 25;
-    pointer-events: none;
-    animation: scanDown 9s linear infinite;
+    position:fixed; top:-3px; left:0; width:100%; height:3px;
+    background:linear-gradient(90deg,transparent 0%,rgba(255,140,60,.15) 10%,
+      rgba(255,140,60,.85) 50%,rgba(255,140,60,.15) 90%,transparent 100%);
+    box-shadow:0 0 18px rgba(255,140,60,.7),0 0 40px rgba(255,100,20,.3);
+    z-index:25; pointer-events:none; animation:scanDown 9s linear infinite;
   }
   @keyframes scanDown {
-    0%   { top: -3px;   opacity: 0; }
-    4%   { opacity: 1; }
-    96%  { opacity: 0.8; }
-    100% { top: 100vh;  opacity: 0; }
+    0%{top:-3px;opacity:0} 4%{opacity:1} 96%{opacity:.8} 100%{top:100vh;opacity:0}
   }
-
-  /* ── CRT scanlines overlay ── */
   body::after {
-    content: '';
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0,0,0,0.06) 2px,
-      rgba(0,0,0,0.06) 4px
-    );
-    z-index: 30;
-    pointer-events: none;
+    content:''; position:fixed; top:0; left:0; width:100%; height:100%;
+    background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.06) 2px,rgba(0,0,0,.06) 4px);
+    z-index:30; pointer-events:none;
   }
 
-  /* ── Android hand ── */
-  #android-hand {
-    position: fixed;
-    bottom: -50px;
-    right: -45px;
-    width: 270px;
-    height: 510px;
-    z-index: 20;
-    pointer-events: none;
-    opacity: 0.88;
-    transform-origin: 78% 92%;
-    animation: handFloat 5s ease-in-out infinite;
-    filter: drop-shadow(0 0 10px rgba(255,140,60,0.5))
-            drop-shadow(0 0 28px rgba(255,100,20,0.25));
+  /* Female android character — left side */
+  #char-left {
+    position:fixed; left:-12px; top:50%; transform:translateY(-50%);
+    width:300px; height:600px; z-index:12; pointer-events:none;
+    animation:charFloat 6s ease-in-out infinite;
   }
-  @keyframes handFloat {
-    0%,100% { transform: translate(0,0) rotate(-6deg); }
-    50%     { transform: translate(-10px,-14px) rotate(-4deg); }
-  }
-  #android-hand.fired {
-    animation: handFire 0.55s ease-out forwards;
-  }
-  @keyframes handFire {
-    0%  { transform: translate(0,0) rotate(-6deg);
-          filter: drop-shadow(0 0 10px rgba(255,140,60,0.5)); }
-    40% { transform: translate(-25px,-38px) rotate(0deg) scale(1.04);
-          filter: drop-shadow(0 0 30px rgba(255,140,60,1))
-                  drop-shadow(0 0 60px rgba(80,180,255,0.5)); }
-    100%{ transform: translate(-18px,-26px) rotate(-2deg);
-          filter: drop-shadow(0 0 14px rgba(255,140,60,0.6)); }
+  @keyframes charFloat {
+    0%,100%{transform:translateY(-50%) translateX(0px)}
+    50%{transform:translateY(-50%) translateX(-6px)}
   }
 
-  /* ── Content ── */
+  /* Content — padding-left reserves space for character */
   #content {
-    position: relative;
-    z-index: 10;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    padding: 60px 80px;
-    overflow-y: auto;
-    overflow-x: hidden;
+    position:relative; z-index:10; width:100%; height:100%;
+    display:flex; flex-direction:column; justify-content:flex-start; align-items:center;
+    padding:60px 80px 60px 295px; overflow-y:auto; overflow-x:hidden;
   }
-
-  .terminal-block {
-    width: 100%;
-    max-width: 1200px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  /* ── Line styles (original preserved) ── */
+  .terminal-block { width:100%; max-width:1100px; display:flex; flex-direction:column; align-items:center; }
   .line {
-    font-size: 30px;
-    line-height: 1.85;
-    color: #00ff41;
-    white-space: pre;
-    opacity: 0;
-    text-shadow: 0 0 8px #00ff41;
-    min-height: 1.85em;
-    text-align: center;
-    width: 100%;
-    transition: text-shadow 0.1s;
+    font-size:30px; line-height:1.85; color:#00ff41; white-space:pre; opacity:0;
+    text-shadow:0 0 8px #00ff41; min-height:1.85em; text-align:center; width:100%;
   }
+  .line.prompt   { color:#00aa22; font-size:24px; text-align:left; }
+  .line.highlight{ color:#aaffaa; font-size:34px; font-weight:bold;
+    text-shadow:0 0 16px #00ff41,0 0 32px #00ff41; text-align:center; }
+  .line.dim      { color:#005510; font-size:22px; letter-spacing:2px; text-align:center; }
+  .line.section  { color:#00dd33; font-size:22px; font-style:italic; text-align:center; text-shadow:0 0 10px #00ff41; }
+  .line.case     { color:#00ee44; font-size:26px; text-align:left; padding-left:40px; }
+  .line.ending   { color:#00ff41; font-size:36px; font-weight:bold;
+    text-shadow:0 0 20px #00ff41,0 0 40px #00ff41; text-align:center; }
+  .line.status   { color:#00ff41; font-size:24px; text-align:center; letter-spacing:3px; text-shadow:0 0 12px #00ff41; }
 
-  .line.prompt {
-    color: #00aa22; font-size: 24px; text-align: left;
-  }
-  .line.highlight {
-    color: #aaffaa; font-size: 34px; font-weight: bold;
-    text-shadow: 0 0 16px #00ff41, 0 0 32px #00ff41; text-align: center;
-  }
-  .line.dim {
-    color: #005510; font-size: 22px; letter-spacing: 2px; text-align: center;
-  }
-  .line.section {
-    color: #00dd33; font-size: 22px; font-style: italic;
-    text-align: center; text-shadow: 0 0 10px #00ff41;
-  }
-  .line.case {
-    color: #00ee44; font-size: 26px; text-align: left; padding-left: 40px;
-  }
-  .line.ending {
-    color: #00ff41; font-size: 36px; font-weight: bold;
-    text-shadow: 0 0 20px #00ff41, 0 0 40px #00ff41; text-align: center;
-  }
-  .line.status {
-    color: #00ff41; font-size: 24px; text-align: center;
-    letter-spacing: 3px; text-shadow: 0 0 12px #00ff41;
-  }
-
-  /* ── RGB-split glitch ── */
   @keyframes rgbGlitch {
-    0%   { text-shadow: 0 0 8px #00ff41; transform: none; }
-    15%  { text-shadow: -3px 0 rgba(255,0,120,0.85), 3px 0 rgba(0,180,255,0.85), 0 0 8px #00ff41;
-           transform: translate(2px,0); }
-    30%  { text-shadow: 3px 0 rgba(255,0,120,0.6), -2px 0 rgba(0,180,255,0.6), 0 0 8px #00ff41;
-           transform: translate(-2px,0); }
-    50%  { text-shadow: -1px 0 rgba(255,0,120,0.4), 1px 0 rgba(0,180,255,0.4), 0 0 8px #00ff41;
-           transform: translate(1px,0); }
-    75%  { text-shadow: 2px 0 rgba(0,180,255,0.3), 0 0 8px #00ff41;
-           transform: translate(0,0); }
-    100% { text-shadow: 0 0 8px #00ff41; transform: none; }
+    0%,100%{text-shadow:0 0 8px #00ff41;transform:none}
+    15%{text-shadow:-3px 0 rgba(255,0,120,.85),3px 0 rgba(0,180,255,.85),0 0 8px #00ff41;transform:translate(2px,0)}
+    35%{text-shadow:3px 0 rgba(255,0,120,.6),-2px 0 rgba(0,180,255,.6),0 0 8px #00ff41;transform:translate(-2px,0)}
+    55%{text-shadow:-1px 0 rgba(255,0,120,.4),0 0 8px #00ff41;transform:translate(1px,0)}
+    80%{text-shadow:0 0 8px #00ff41;transform:none}
   }
-  .line.glitch-anim {
-    animation: rgbGlitch 0.2s steps(3) 2;
-  }
-
-  /* ── Cursor ── */
-  .cursor {
-    display: inline-block;
-    width: 16px; height: 28px;
-    background: #00ff41;
-    vertical-align: middle;
-    animation: blink 0.7s step-end infinite;
-    box-shadow: 0 0 8px #00ff41;
-  }
-  @keyframes blink { 50% { opacity: 0; } }
+  .line.glitch-anim{animation:rgbGlitch .2s steps(3) 2}
+  .cursor{display:inline-block;width:16px;height:28px;background:#00ff41;vertical-align:middle;
+    animation:blink .7s step-end infinite;box-shadow:0 0 8px #00ff41}
+  @keyframes blink{50%{opacity:0}}
 </style>
 </head>
 <body>
-
 <canvas id="matrix-canvas"></canvas>
 <canvas id="fx-canvas"></canvas>
 <div id="scanline"></div>
 
-<!-- ════════════════════════════════════
-     ANDROID HAND — holographic SVG
-     Blade Runner 2049 style fingertip
-     ════════════════════════════════════ -->
-<svg id="android-hand" viewBox="0 0 200 480" xmlns="http://www.w3.org/2000/svg">
+<!-- Female android — left side, facing right, arm tracks active text line -->
+<svg id="char-left" viewBox="0 0 370 640" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <!-- Soft glow filter -->
-    <filter id="f-glow" x="-80%" y="-80%" width="260%" height="260%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b"/>
+    <filter id="pg" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="b"/>
       <feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
-    <!-- Strong glow for tip -->
-    <filter id="f-glow2" x="-120%" y="-120%" width="340%" height="340%">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="14" result="b"/>
+    <filter id="pg2" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="11" result="b"/>
       <feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
-    <!-- Skin gradient: fades in from wrist upward -->
-    <linearGradient id="skinFade" x1="0.5" y1="1" x2="0.5" y2="0">
-      <stop offset="0%"   stop-color="#c8a078" stop-opacity="0.04"/>
-      <stop offset="25%"  stop-color="#d4a882" stop-opacity="0.28"/>
-      <stop offset="65%"  stop-color="#e8c4a0" stop-opacity="0.52"/>
-      <stop offset="100%" stop-color="#ffeedd" stop-opacity="0.72"/>
-    </linearGradient>
-    <!-- Orange overlay: glows toward tip -->
-    <linearGradient id="orangeOverlay" x1="0.5" y1="1" x2="0.5" y2="0">
-      <stop offset="0%"   stop-color="#ff8c42" stop-opacity="0"/>
-      <stop offset="70%"  stop-color="#ff8c42" stop-opacity="0.18"/>
-      <stop offset="100%" stop-color="#ffaa66" stop-opacity="0.45"/>
-    </linearGradient>
-    <!-- Tip radial glow -->
-    <radialGradient id="tipCore" cx="50%" cy="50%" r="50%">
-      <stop offset="0%"   stop-color="#ffffff" stop-opacity="1"/>
-      <stop offset="35%"  stop-color="#ffeecc" stop-opacity="0.9"/>
-      <stop offset="70%"  stop-color="#ff8c42" stop-opacity="0.5"/>
-      <stop offset="100%" stop-color="#ff8c42" stop-opacity="0"/>
+    <radialGradient id="aura" cx="58%" cy="36%" r="62%">
+      <stop offset="0%" stop-color="#bb33ff" stop-opacity=".32"/>
+      <stop offset="55%" stop-color="#7711bb" stop-opacity=".12"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0"/>
     </radialGradient>
-
-    <!-- Pulse animation on tip glow -->
-    <animate id="pulse-anim"/>
+    <radialGradient id="ptip" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fff" stop-opacity="1"/>
+      <stop offset="38%" stop-color="#ff88ff" stop-opacity=".9"/>
+      <stop offset="100%" stop-color="#cc22ff" stop-opacity="0"/>
+    </radialGradient>
   </defs>
 
-  <!-- ── Palm base ── -->
-  <path d="M38 480 L38 345 Q55 322 100 328 Q145 322 162 345 L162 480 Z"
-        fill="url(#skinFade)" opacity="0.55"/>
-  <!-- Palm crease lines -->
-  <path d="M42 410 Q100 396 158 410" stroke="#ff8c42" stroke-width="0.9" opacity="0.28" fill="none"/>
-  <path d="M40 368 Q100 355 160 368" stroke="#ff8c42" stroke-width="0.9" opacity="0.22" fill="none"/>
-  <!-- Side contours of palm -->
-  <line x1="38" y1="345" x2="38" y2="480" stroke="rgba(232,196,160,0.35)" stroke-width="1.5"/>
-  <line x1="162" y1="345" x2="162" y2="480" stroke="rgba(232,196,160,0.35)" stroke-width="1.5"/>
+  <ellipse cx="155" cy="240" rx="155" ry="220" fill="url(#aura)"/>
 
-  <!-- ── Index finger: left & right contours ── -->
-  <path d="M70 340 C69 295,67 245,67 195 C67 153,69 112,73 82
-           C76 58,81 38,88 22 C91 14,95 9,100 9"
-        stroke="rgba(232,196,160,0.52)" stroke-width="2" fill="none"/>
-  <path d="M130 340 C131 295,133 245,133 195 C133 153,131 112,127 82
-           C124 58,119 38,112 22 C109 14,105 9,100 9"
-        stroke="rgba(232,196,160,0.52)" stroke-width="2" fill="none"/>
+  <!-- HAIR: dark fill + blue-purple glow edges, bob cut -->
+  <path d="M 52 298 C 34 274,26 230,30 186 C 34 138,54 96,94 66 C 130 38,176 26,216 36
+           C 246 44,266 62,270 84 C 276 106,268 128,256 142 L 228 146
+           C 238 134,246 116,242 98 C 236 72,214 56,186 50 C 154 44,116 56,90 80
+           C 64 104,52 142,52 180 C 52 214,60 250,70 270 Z"
+        fill="#0e051f" opacity=".96"/>
+  <path d="M 52 298 C 50 314,50 328,54 340 C 58 348,64 350,70 344 L 74 318 C 70 306,64 298,60 292 Z"
+        fill="#0e051f" opacity=".92"/>
+  <path d="M 256 142 C 254 160,248 176,240 188 C 232 200,220 208,210 212
+           L 203 198 C 213 194,222 188,228 178 C 234 166,238 152,238 142 Z"
+        fill="#0e051f" opacity=".94"/>
+  <path d="M 52 298 C 34 274,26 230,30 186 C 34 138,54 96,94 66 C 130 38,176 26,216 36 C 246 44,266 62,270 84"
+        stroke="#4455ee" stroke-width="2.5" fill="none" opacity=".62" filter="url(#pg)"/>
+  <path d="M 52 298 C 50 316,52 334,58 344" stroke="#5533bb" stroke-width="2" fill="none" opacity=".55" filter="url(#pg)"/>
+  <path d="M 256 142 C 252 162,244 180,232 194 C 222 206,208 214,202 214"
+        stroke="#4455ee" stroke-width="2" fill="none" opacity=".5" filter="url(#pg)"/>
 
-  <!-- Finger fill (skin) -->
-  <path d="M70 340 C69 295,67 245,67 195 C67 153,69 112,73 82
-           C77 56,83 34,91 18 C94 11,97 7,100 7
-           C103 7,106 11,109 18
-           C117 34,123 56,127 82
-           C131 112,133 153,133 195
-           C133 245,131 295,130 340 Z"
-        fill="url(#skinFade)" opacity="0.48"/>
+  <!-- FACE: pink-neon profile outline -->
+  <path d="M 258 142 C 262 156,262 170,256 182 C 252 191,252 198,256 208
+           C 260 220,260 230,254 240 C 248 250,238 256,226 258
+           C 214 260,202 256,194 248 C 186 240,182 228,184 216
+           C 186 203,190 192,188 180 C 186 170,180 160,178 150"
+        stroke="rgba(255,160,220,.68)" stroke-width="2.2" fill="none"/>
+  <path d="M 256 196 C 262 203,264 211,258 217 C 254 221,248 222,244 224"
+        stroke="rgba(255,160,220,.48)" stroke-width="1.5" fill="none"/>
+  <path d="M 250 246 C 256 242,263 244,266 249 C 262 255,253 258,248 254"
+        stroke="rgba(255,70,180,.72)" stroke-width="2" fill="rgba(255,70,180,.18)"/>
+  <ellipse cx="253" cy="164" rx="6" ry="4" fill="#1a0035" stroke="rgba(210,90,255,.78)" stroke-width="1.3"/>
+  <ellipse cx="253" cy="164" rx="3" ry="2.5" fill="rgba(180,60,255,.65)"/>
+  <path d="M 246 161 C 250 155,256 155,260 161" stroke="#0e051f" stroke-width="3.5" fill="none"/>
+  <path d="M 258 142 C 262 156,262 170,256 182 C 252 191,252 198,256 208 C 260 220,260 230,254 240 C 248 250,238 256,226 258"
+        stroke="rgba(255,110,220,.38)" stroke-width="5" fill="none" filter="url(#pg)"/>
 
-  <!-- Orange glow overlay on finger -->
-  <path d="M70 340 C69 295,67 245,67 195 C67 153,69 112,73 82
-           C77 56,83 34,91 18 C94 11,97 7,100 7
-           C103 7,106 11,109 18
-           C117 34,123 56,127 82
-           C131 112,133 153,133 195
-           C133 245,131 295,130 340 Z"
-        fill="url(#orangeOverlay)" opacity="0.7"/>
+  <!-- NECK -->
+  <path d="M 194 258 C 188 272,184 286,184 300 C 184 310,186 318,190 322"
+        stroke="rgba(255,140,210,.55)" stroke-width="13" fill="none" stroke-linecap="round"/>
+  <path d="M 194 258 C 188 272,184 286,184 300 C 184 310,186 318,190 322"
+        stroke="rgba(255,80,200,.35)" stroke-width="2" fill="none" filter="url(#pg)"/>
 
-  <!-- ── Joint lines ── -->
-  <!-- Lower joint -->
-  <path d="M72 278 Q100 270 128 278" stroke="#ff8c42" stroke-width="1.3" opacity="0.58" fill="none"/>
-  <path d="M72 278 Q100 286 128 278" stroke="#ff8c42" stroke-width="0.6" opacity="0.28" fill="none"/>
-  <!-- Middle joint -->
-  <path d="M70 190 Q100 182 130 190" stroke="#ff8c42" stroke-width="1.2" opacity="0.52" fill="none"/>
-  <path d="M70 190 Q100 198 130 190" stroke="#ff8c42" stroke-width="0.6" opacity="0.24" fill="none"/>
-  <!-- Upper joint -->
-  <path d="M74 112 Q100 105 126 112" stroke="#ff8c42" stroke-width="1.0" opacity="0.45" fill="none"/>
-  <path d="M74 112 Q100 119 126 112" stroke="#ff8c42" stroke-width="0.5" opacity="0.2" fill="none"/>
+  <!-- SHOULDER -->
+  <path d="M 190 322 C 188 330,183 340,174 346 C 162 354,144 356,122 352
+           C 98 348,72 338,50 326 C 32 316,18 304,14 292"
+        stroke="rgba(255,130,205,.42)" stroke-width="22" fill="none" stroke-linecap="round"/>
+  <path d="M 190 322 C 188 330,183 340,174 346 C 162 354,144 356,122 352 C 98 348,72 338,50 326"
+        stroke="rgba(255,80,200,.28)" stroke-width="2" fill="none" filter="url(#pg)"/>
 
-  <!-- ── Circuit / tech details ── -->
-  <!-- Vertical center trace -->
-  <line x1="100" y1="260" x2="100" y2="202" stroke="#ff8c42" stroke-width="0.7"
-        stroke-dasharray="3,8" opacity="0.42"/>
-  <!-- Horizontal data lines -->
-  <line x1="85" y1="236" x2="115" y2="236" stroke="#0099ff" stroke-width="0.8" opacity="0.38"/>
-  <line x1="82" y1="158" x2="118" y2="158" stroke="#0099ff" stroke-width="0.8" opacity="0.32"/>
-  <line x1="100" y1="158" x2="100" y2="118" stroke="#ff8c42" stroke-width="0.7"
-        stroke-dasharray="2,7" opacity="0.35"/>
-  <!-- Hex detail panel (mid-finger) -->
-  <path d="M93 168 L100 163 L107 168 L107 176 L100 181 L93 176 Z"
-        stroke="#0099ff" stroke-width="0.7" fill="rgba(0,80,160,0.12)" opacity="0.45"/>
-  <!-- Small dot nodes on joints -->
-  <circle cx="88"  cy="278" r="1.5" fill="#ff8c42" opacity="0.6"/>
-  <circle cx="112" cy="278" r="1.5" fill="#ff8c42" opacity="0.6"/>
-  <circle cx="86"  cy="190" r="1.5" fill="#ff8c42" opacity="0.5"/>
-  <circle cx="114" cy="190" r="1.5" fill="#ff8c42" opacity="0.5"/>
+  <!-- ARM GROUP — pivot at (150, 308) — rotated by JS to track active line -->
+  <g id="char-arm-group">
+    <path d="M 150 308 C 175 304,205 300,232 298 C 255 296,274 296,290 298"
+          stroke="rgba(255,140,210,.54)" stroke-width="15" fill="none" stroke-linecap="round"/>
+    <path d="M 150 308 C 175 304,205 300,232 298 C 255 296,274 296,290 298"
+          stroke="rgba(255,180,230,.22)" stroke-width="22" fill="none" stroke-linecap="round"/>
+    <path d="M 290 298 C 300 298,308 300,314 304 C 318 307,318 311,316 315"
+          stroke="rgba(255,140,210,.52)" stroke-width="12" fill="none" stroke-linecap="round"/>
+    <ellipse cx="313" cy="318" rx="12" ry="9"
+             fill="rgba(255,148,215,.34)" stroke="rgba(255,140,210,.52)" stroke-width="1.2"/>
+    <!-- index finger pointing right -->
+    <path d="M 318 313 L 368 311 C 374 311,378 313,378 316 C 378 319,374 321,368 321 L 318 323 Z"
+          fill="rgba(255,148,215,.52)" stroke="rgba(255,140,210,.62)" stroke-width="1"/>
+    <!-- curled fingers -->
+    <path d="M 314 323 C 312 331,312 339,315 344 C 317 347,321 347,323 343"
+          stroke="rgba(255,128,205,.40)" stroke-width="8" fill="none" stroke-linecap="round"/>
+    <path d="M 310 328 C 306 337,306 346,310 351 C 312 354,317 353,318 349"
+          stroke="rgba(255,128,205,.34)" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <path d="M 306 331 C 301 340,302 350,306 355 C 309 358,313 356,314 352"
+          stroke="rgba(255,128,205,.28)" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <!-- fingertip glow -->
+    <circle cx="380" cy="316" r="32" fill="#cc22ff" opacity=".10" filter="url(#pg2)">
+      <animate attributeName="opacity" values=".07;.18;.07" dur="2.1s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="380" cy="316" r="17" fill="#ff44cc" opacity=".22" filter="url(#pg)">
+      <animate attributeName="opacity" values=".15;.32;.15" dur="2.1s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="380" cy="316" r="7.5" fill="url(#ptip)" opacity=".93"/>
+    <circle cx="380" cy="316" r="3" fill="#fff" opacity=".97"/>
+    <ellipse cx="380" cy="316" rx="30" ry="11"
+             stroke="#ff44cc" stroke-width="1.2" fill="none" opacity=".42" filter="url(#pg)">
+      <animate attributeName="rx" values="28;36;28" dur="2.1s" repeatCount="indefinite"/>
+    </ellipse>
+    <ellipse cx="380" cy="316" rx="22" ry="8"
+             stroke="#aa66ff" stroke-width=".9" fill="none" opacity=".50">
+      <animate attributeName="rx" values="20;28;20" dur="2.1s" repeatCount="indefinite"/>
+    </ellipse>
+    <line x1="380" y1="309" x2="380" y2="296" stroke="#fff" stroke-width=".6" opacity=".42"/>
+    <line x1="380" y1="309" x2="366" y2="301" stroke="#ff44cc" stroke-width=".5" opacity=".30"/>
+    <line x1="380" y1="309" x2="394" y2="301" stroke="#ff44cc" stroke-width=".5" opacity=".30"/>
+  </g>
 
-  <!-- ── Fingertip glow layers ── -->
-  <!-- Outermost diffuse halo -->
-  <circle cx="100" cy="14" r="36" fill="#ff8c42" opacity="0.1" filter="url(#f-glow2)">
-    <animate attributeName="opacity" values="0.08;0.18;0.08" dur="2.2s" repeatCount="indefinite"/>
-  </circle>
-  <!-- Mid glow ring -->
-  <circle cx="100" cy="14" r="20" fill="#ff8c42" opacity="0.22" filter="url(#f-glow)">
-    <animate attributeName="opacity" values="0.15;0.30;0.15" dur="2.2s" repeatCount="indefinite"/>
-  </circle>
-  <!-- Core bright dot -->
-  <circle cx="100" cy="14" r="7"  fill="url(#tipCore)"  opacity="0.95"/>
-  <circle cx="100" cy="14" r="3"  fill="#ffffff"          opacity="0.97"/>
-
-  <!-- Holographic contact rings -->
-  <ellipse cx="100" cy="14" rx="30" ry="10"
-           stroke="#ff8c42" stroke-width="1.2" fill="none" opacity="0.40" filter="url(#f-glow)">
-    <animate attributeName="rx" values="28;34;28" dur="2.2s" repeatCount="indefinite"/>
-    <animate attributeName="opacity" values="0.35;0.55;0.35" dur="2.2s" repeatCount="indefinite"/>
-  </ellipse>
-  <ellipse cx="100" cy="14" rx="22" ry="7"
-           stroke="#4499ff" stroke-width="0.9" fill="none" opacity="0.50">
-    <animate attributeName="rx" values="20;26;20" dur="2.2s" repeatCount="indefinite"/>
-  </ellipse>
-  <ellipse cx="100" cy="14" rx="13" ry="4"
-           stroke="#ffffff" stroke-width="0.5" fill="none" opacity="0.28"/>
-
-  <!-- Light rays from tip -->
-  <line x1="100" y1="8"  x2="100" y2="-8" stroke="#fff"    stroke-width="0.6" opacity="0.45"/>
-  <line x1="100" y1="8"  x2="86"  y2="0"  stroke="#ff8c42" stroke-width="0.5" opacity="0.32"/>
-  <line x1="100" y1="8"  x2="114" y2="0"  stroke="#ff8c42" stroke-width="0.5" opacity="0.32"/>
-  <line x1="100" y1="8"  x2="78"  y2="-4" stroke="#4499ff" stroke-width="0.4" opacity="0.20"/>
-  <line x1="100" y1="8"  x2="122" y2="-4" stroke="#4499ff" stroke-width="0.4" opacity="0.20"/>
+  <!-- sparkle particles -->
+  <circle cx="278" cy="52"  r="1.5" fill="#cc88ff" opacity=".7"><animate attributeName="opacity" values=".7;.15;.7"  dur="1.9s" repeatCount="indefinite"/></circle>
+  <circle cx="260" cy="80"  r="1"   fill="#8844ff" opacity=".6"><animate attributeName="opacity" values=".6;.1;.6"   dur="2.4s" repeatCount="indefinite"/></circle>
+  <circle cx="238" cy="42"  r="1.5" fill="#bb66ff" opacity=".5"><animate attributeName="opacity" values=".5;.12;.5"  dur="1.6s" repeatCount="indefinite"/></circle>
+  <circle cx="28"  cy="176" r="1.5" fill="#6633cc" opacity=".5"><animate attributeName="opacity" values=".5;.08;.5"  dur="2.2s" repeatCount="indefinite"/></circle>
+  <circle cx="38"  cy="128" r="1"   fill="#8844ff" opacity=".4"><animate attributeName="opacity" values=".4;.05;.4"  dur="3.1s" repeatCount="indefinite"/></circle>
+  <circle cx="298" cy="348" r="1.5" fill="#ff66cc" opacity=".45"><animate attributeName="opacity" values=".45;.1;.45" dur="2.7s" repeatCount="indefinite"/></circle>
+  <circle cx="178" cy="28"  r="1"   fill="#9955ff" opacity=".6"><animate attributeName="opacity" values=".6;.1;.6"   dur="2.9s" repeatCount="indefinite"/></circle>
 </svg>
 
 <div id="content">
@@ -349,312 +210,190 @@
 </div>
 
 <script>
-// ══════════════════════════════════════════════════════════════
-//  1. MATRIX RAIN  — multi-color depth-aware streams
-// ══════════════════════════════════════════════════════════════
+// 1. MATRIX RAIN
 const matCanvas = document.getElementById('matrix-canvas');
-const mctx      = matCanvas.getContext('2d');
-matCanvas.width  = window.innerWidth;
-matCanvas.height = window.innerHeight;
-
-const CHARS = '的了是在以和有大这主国经一要人我他为你上来产用工动方业种地发也看什么都会实现数据算法分析报告舆情内容传播运行智能协作01アイウエオカキクケコ∑∂∇λΩ░▒▓';
-const FS    = 17;
-const COLS  = Math.floor(matCanvas.width / FS);
-
-// Each stream: position, speed, color-type, brightness
-const streams = Array.from({length: COLS}, () => ({
-  y:      Math.random() * (matCanvas.height / FS),
-  speed:  0.35 + Math.random() * 0.9,
-  hue:    Math.random() < 0.07 ? (Math.random() < 0.5 ? 'orange' : 'blue') : 'green',
-  bright: Math.random() > 0.82,
-  skip:   Math.random() > 0.88           // some columns start paused
+const mctx = matCanvas.getContext('2d');
+matCanvas.width = window.innerWidth; matCanvas.height = window.innerHeight;
+const CHARS = '\u7684\u4e86\u662f\u5728\u548c\u6709\u5927\u8fd9\u56fd\u7ecf\u4e00\u8981\u4eba\u5b9e\u73b0\u6570\u636e\u7b97\u6cd5\u5206\u6790\u8206\u60c5\u5185\u5bb9\u4f20\u64ad\u8fd0\u884c\u667a\u80fd\u534f\u4f5c01\u30a2\u30a4\u30a6\u30ab\u03a9\u2211\u03bb\u2592\u2593';
+const FS = 17, COLS = Math.floor(matCanvas.width / FS);
+const streams = Array.from({length:COLS}, () => ({
+  y: Math.random() * matCanvas.height / FS,
+  speed: .35 + Math.random() * .9,
+  hue: Math.random() < .07 ? (Math.random() < .5 ? 'orange' : 'blue') : 'green',
+  bright: Math.random() > .82
 }));
-
-// Occasional "burst" column — full-bright for one frame
 let burstCol = -1;
-setInterval(() => { burstCol = Math.floor(Math.random() * COLS); }, 1200);
-
+setInterval(() => { burstCol = Math.floor(Math.random() * COLS); }, 1100);
 function drawMatrix() {
-  mctx.fillStyle = 'rgba(0,0,0,0.05)';
-  mctx.fillRect(0, 0, matCanvas.width, matCanvas.height);
+  mctx.fillStyle = 'rgba(0,0,0,0.05)'; mctx.fillRect(0,0,matCanvas.width,matCanvas.height);
   mctx.font = FS + 'px monospace';
-
-  streams.forEach((s, i) => {
-    const char = CHARS[Math.floor(Math.random() * CHARS.length)];
-    const isBurst = (i === burstCol);
-
+  streams.forEach((s,i) => {
+    const ch = CHARS[Math.floor(Math.random() * CHARS.length)], burst = i === burstCol;
     let color, alpha;
-    if (s.hue === 'orange') { color = '#ff8c42'; alpha = isBurst ? 0.55 : (s.bright ? 0.32 : 0.19); }
-    else if (s.hue === 'blue') { color = '#44aaff'; alpha = isBurst ? 0.50 : (s.bright ? 0.28 : 0.17); }
-    else                       { color = '#00ff41'; alpha = isBurst ? 0.60 : (s.bright ? 0.26 : 0.17); }
-
-    mctx.globalAlpha = alpha;
-    mctx.fillStyle   = color;
-    mctx.fillText(char, i * FS, s.y * FS);
-    mctx.globalAlpha = 1;
-
-    if (!s.skip) s.y += s.speed;
-    if (s.y * FS > matCanvas.height && Math.random() > 0.975) {
-      s.y      = 0;
-      s.hue    = Math.random() < 0.07 ? (Math.random() < 0.5 ? 'orange' : 'blue') : 'green';
-      s.bright = Math.random() > 0.82;
-      s.skip   = false;
+    if (s.hue==='orange')     {color='#ff8c42'; alpha=burst?.55:(s.bright?.32:.19);}
+    else if (s.hue==='blue')  {color='#44aaff'; alpha=burst?.50:(s.bright?.28:.17);}
+    else                      {color='#00ff41'; alpha=burst?.60:(s.bright?.26:.17);}
+    mctx.globalAlpha=alpha; mctx.fillStyle=color;
+    mctx.fillText(ch, i*FS, s.y*FS); mctx.globalAlpha=1;
+    s.y += s.speed;
+    if (s.y*FS > matCanvas.height && Math.random() > .975) {
+      s.y=0; s.hue=Math.random()<.07?(Math.random()<.5?'orange':'blue'):'green'; s.bright=Math.random()>.82;
     }
-    // Occasionally pause a stream (simulates dropped frames)
-    if (Math.random() > 0.9985) s.skip = !s.skip;
   });
 }
 setInterval(drawMatrix, 40);
 
-// ══════════════════════════════════════════════════════════════
-//  2. FX CANVAS  — click ripples & particles
-// ══════════════════════════════════════════════════════════════
+// 2. FX CANVAS
 const fxCanvas = document.getElementById('fx-canvas');
-const fx       = fxCanvas.getContext('2d');
-fxCanvas.width  = window.innerWidth;
-fxCanvas.height = window.innerHeight;
-
-const ripples   = [];
-const particles = [];
-
+const fx = fxCanvas.getContext('2d');
+fxCanvas.width = window.innerWidth; fxCanvas.height = window.innerHeight;
+const ripples=[], particles=[];
 class Ripple {
-  constructor(x, y) {
-    this.x = x; this.y = y;
-    this.life = 1;
-    // Three concentric rings with different speeds & colors
-    this.rings = [
-      { r: 0, speed: 4.2, rgba: '255,140,60',  lw: 2.0 },
-      { r: 0, speed: 2.5, rgba: '80,160,255',  lw: 1.4 },
-      { r: 0, speed: 1.4, rgba: '0,255,100',   lw: 1.0 },
-    ];
-  }
-  update() {
-    this.life -= 0.016;
-    this.rings.forEach(r => { r.r += r.speed; });
-  }
-  draw() {
-    this.rings.forEach(ring => {
-      const a = this.life * Math.max(0, 1 - ring.r / 220);
-      if (a <= 0) return;
-      fx.beginPath();
-      fx.arc(this.x, this.y, ring.r, 0, Math.PI * 2);
-      fx.strokeStyle = `rgba(${ring.rgba},${a.toFixed(3)})`;
-      fx.lineWidth   = ring.lw;
-      fx.shadowBlur  = 12;
-      fx.shadowColor = `rgba(${ring.rgba},0.5)`;
-      fx.stroke();
-      fx.shadowBlur  = 0;
-    });
-  }
-  get dead() { return this.life <= 0; }
+  constructor(x,y){ this.x=x;this.y=y;this.life=1;
+    this.rings=[{r:0,speed:4.2,rgba:'255,140,60',lw:2},{r:0,speed:2.5,rgba:'200,80,255',lw:1.4},{r:0,speed:1.4,rgba:'0,255,100',lw:1}]; }
+  update(){ this.life-=.016; this.rings.forEach(r=>r.r+=r.speed); }
+  draw(){ this.rings.forEach(ring=>{
+    const a=this.life*Math.max(0,1-ring.r/220); if(a<=0)return;
+    fx.beginPath(); fx.arc(this.x,this.y,ring.r,0,Math.PI*2);
+    fx.strokeStyle=`rgba(${ring.rgba},${a.toFixed(3)})`; fx.lineWidth=ring.lw;
+    fx.shadowBlur=12; fx.shadowColor=`rgba(${ring.rgba},.5)`; fx.stroke(); fx.shadowBlur=0;
+  }); }
+  get dead(){ return this.life<=0; }
 }
-
 class Particle {
-  constructor(x, y) {
-    const angle = Math.random() * Math.PI * 2;
-    const spd   = 1.8 + Math.random() * 4.5;
-    this.x  = x; this.y  = y;
-    this.vx = Math.cos(angle) * spd;
-    this.vy = Math.sin(angle) * spd;
-    this.life = 0.8 + Math.random() * 0.4;
-    this.size = 1.2 + Math.random() * 3;
-    const r   = Math.random();
-    this.color = r < 0.45 ? '#ff8c42' : r < 0.75 ? '#44aaff' : '#00ff88';
-  }
-  update() {
-    this.x   += this.vx;
-    this.y   += this.vy;
-    this.vy  += 0.07;          // gravity
-    this.vx  *= 0.98;          // drag
-    this.life -= 0.022;
-    this.size *= 0.974;
-  }
-  draw() {
-    fx.save();
-    fx.globalAlpha = Math.max(0, this.life);
-    fx.shadowBlur  = 10;
-    fx.shadowColor = this.color;
-    fx.fillStyle   = this.color;
-    fx.beginPath();
-    fx.arc(this.x, this.y, Math.max(0, this.size), 0, Math.PI * 2);
-    fx.fill();
-    fx.restore();
-  }
-  get dead() { return this.life <= 0 || this.size < 0.15; }
+  constructor(x,y){ const a=Math.random()*Math.PI*2,s=1.8+Math.random()*4.5;
+    this.x=x;this.y=y;this.vx=Math.cos(a)*s;this.vy=Math.sin(a)*s;
+    this.life=.8+Math.random()*.4;this.size=1.2+Math.random()*3;
+    const r=Math.random(); this.color=r<.45?'#ff66cc':r<.75?'#aa44ff':'#00ff88'; }
+  update(){ this.x+=this.vx;this.y+=this.vy;this.vy+=.07;this.vx*=.98;this.life-=.022;this.size*=.974; }
+  draw(){ fx.save();fx.globalAlpha=Math.max(0,this.life);fx.shadowBlur=10;fx.shadowColor=this.color;
+    fx.fillStyle=this.color;fx.beginPath();fx.arc(this.x,this.y,Math.max(0,this.size),0,Math.PI*2);fx.fill();fx.restore(); }
+  get dead(){ return this.life<=0||this.size<.15; }
+}
+(function fxLoop(){ fx.clearRect(0,0,fxCanvas.width,fxCanvas.height);
+  for(let i=ripples.length-1;i>=0;i--){ripples[i].update();ripples[i].draw();if(ripples[i].dead)ripples.splice(i,1);}
+  for(let i=particles.length-1;i>=0;i--){particles[i].update();particles[i].draw();if(particles[i].dead)particles.splice(i,1);}
+  requestAnimationFrame(fxLoop); })();
+
+// 3. ARM TRACKING — smooth lerp toward active line Y
+const ARM_PIVOT={svgX:150,svgY:308}, CHAR_VB={w:370,h:640};
+let armTarget=0, armCurrent=0;
+const armGroup=document.getElementById('char-arm-group');
+(function armLoop(){
+  armCurrent+=(armTarget-armCurrent)*.055;
+  armGroup.setAttribute('transform',`rotate(${armCurrent.toFixed(2)},${ARM_PIVOT.svgX},${ARM_PIVOT.svgY})`);
+  requestAnimationFrame(armLoop);
+})();
+function aimArmAt(screenY){
+  const el=document.getElementById('char-left'); if(!el)return;
+  const r=el.getBoundingClientRect();
+  const px=r.left+ARM_PIVOT.svgX*(r.width/CHAR_VB.w);
+  const py=r.top +ARM_PIVOT.svgY*(r.height/CHAR_VB.h);
+  const dx=window.innerWidth*.62-px, dy=screenY-py;
+  armTarget=Math.max(-38,Math.min(38,Math.atan2(dy,dx)*180/Math.PI));
 }
 
-function fxLoop() {
-  fx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
-  for (let i = ripples.length   - 1; i >= 0; i--) {
-    ripples[i].update(); ripples[i].draw();
-    if (ripples[i].dead) ripples.splice(i, 1);
-  }
-  for (let i = particles.length - 1; i >= 0; i--) {
-    particles[i].update(); particles[i].draw();
-    if (particles[i].dead) particles.splice(i, 1);
-  }
-  requestAnimationFrame(fxLoop);
-}
-fxLoop();
-
-// ══════════════════════════════════════════════════════════════
-//  3. CLICK INTERACTION
-// ══════════════════════════════════════════════════════════════
-const hand = document.getElementById('android-hand');
-
-document.addEventListener('click', e => {
-  // Spawn ripple + particles
-  ripples.push(new Ripple(e.clientX, e.clientY));
-  for (let i = 0; i < 22; i++) particles.push(new Particle(e.clientX, e.clientY));
-
-  // Finger reach animation
-  hand.classList.remove('fired');
-  void hand.offsetWidth;          // force reflow
-  hand.classList.add('fired');
-  setTimeout(() => {
-    hand.classList.remove('fired');
-  }, 660);
-
-  // Glitch lines near click
-  glitchNearby(e.clientY);
-});
-
-function glitchNearby(y) {
-  document.querySelectorAll('.line').forEach(el => {
-    const rect = el.getBoundingClientRect();
-    if (Math.abs((rect.top + rect.bottom) / 2 - y) < 120) {
+// 4. CLICK
+document.addEventListener('click',e=>{
+  ripples.push(new Ripple(e.clientX,e.clientY));
+  for(let i=0;i<22;i++) particles.push(new Particle(e.clientX,e.clientY));
+  document.querySelectorAll('.line').forEach(el=>{
+    const r=el.getBoundingClientRect();
+    if(Math.abs((r.top+r.bottom)/2-e.clientY)<120){
       el.classList.add('glitch-anim');
-      el.addEventListener('animationend',
-        () => el.classList.remove('glitch-anim'),
-        { once: true }
-      );
+      el.addEventListener('animationend',()=>el.classList.remove('glitch-anim'),{once:true});
     }
   });
-}
+});
 
-// ══════════════════════════════════════════════════════════════
-//  4. PERIODIC AUTO-GLITCH  — random line flicker every ~3s
-// ══════════════════════════════════════════════════════════════
-function autoGlitch() {
-  const visible = Array.from(document.querySelectorAll('.line'))
-    .filter(el => parseFloat(el.style.opacity) > 0);
-  if (visible.length > 0) {
-    const target = visible[Math.floor(Math.random() * visible.length)];
-    target.classList.add('glitch-anim');
-    target.addEventListener('animationend',
-      () => target.classList.remove('glitch-anim'),
-      { once: true }
-    );
-  }
-  setTimeout(autoGlitch, 2800 + Math.random() * 4200);
-}
-setTimeout(autoGlitch, 6000);
+// 5. PERIODIC GLITCH
+(function autoGlitch(){
+  const vis=Array.from(document.querySelectorAll('.line')).filter(el=>parseFloat(el.style.opacity)>0);
+  if(vis.length){const t=vis[Math.floor(Math.random()*vis.length)];
+    t.classList.add('glitch-anim');
+    t.addEventListener('animationend',()=>t.classList.remove('glitch-anim'),{once:true});}
+  setTimeout(autoGlitch,2800+Math.random()*4200);
+})();
 
-// ══════════════════════════════════════════════════════════════
-//  5. SCREEN FLICKER  — very subtle ambient intensity pulse
-// ══════════════════════════════════════════════════════════════
-const matEl = document.getElementById('matrix-canvas');
-function flicker() {
-  const intensity = 0.16 + Math.random() * 0.08;
-  matEl.style.opacity = intensity.toFixed(3);
-  setTimeout(flicker, 80 + Math.random() * 320);
-}
-setTimeout(flicker, 3000);
+// 6. FLICKER
+(function flicker(){
+  matCanvas.style.opacity=(.16+Math.random()*.08).toFixed(3);
+  setTimeout(flicker,80+Math.random()*320);
+})();
 
-// ══════════════════════════════════════════════════════════════
-//  6. SCRIPT ENGINE  (original content preserved exactly)
-// ══════════════════════════════════════════════════════════════
-const script = [
-  // --- 初始化 ---
-  { type: 'prompt',  text: '> 正在初始化 PR AI-STL 协作系统...',   speed: 28 },
-  { type: 'dim',     text: '──────────────────────────────────────', speed: 6 },
-  { type: 'blank' },
-
-  // --- 开场介绍 ---
-  { type: 'normal',    text: '在 PR 工作的每个环节，',               speed: 55 },
-  { type: 'highlight', text: 'AI 正在成为新的协作伙伴。',            speed: 65 },
-  { type: 'blank' },
-  { type: 'normal',    text: 'PR AI-STL 小组，',                     speed: 55 },
-  { type: 'normal',    text: '是一支来自舆情、内容、BP、媒介各条线的', speed: 40 },
-  { type: 'highlight', text: '跨模块的虚拟团队。',                   speed: 65 },
-  { type: 'blank' },
-  { type: 'normal',    text: '我们以"最小化"原则运行，',            speed: 50 },
-  { type: 'normal',    text: '不开会、不填表，只做一件事——',         speed: 50 },
-  { type: 'highlight', text: '把 AI 工具真正用起来，',               speed: 60 },
-  { type: 'normal',    text: '探索人 + Agent 对工作流程的改变，',    speed: 40 },
-  { type: 'normal',    text: '帮 PR 的每一项工作变得更快、更有力。', speed: 40 },
-  { type: 'blank' },
-
-  { type: 'dim',     text: '──────────────────────────────────────', speed: 6 },
-  { type: 'section', text: '// 当中文成为新的编程语言',              speed: 35, delay: 300 },
-  { type: 'section', text: '// 这是我们的机会，也是我们的新起点。',  speed: 35 },
-  { type: 'blank',   delay: 1000 },
-
-  // --- 案例 ---
-  { type: 'prompt',  text: '> 上线工具（含开发中）↓',               speed: 32, delay: 200 },
-  { type: 'blank' },
-  { type: 'case', text: '[ 舆情模块 ]   AI 数据接口 + 虾自动调取，议题追踪提速',    speed: 22 },
-  { type: 'case', text: '[ 内容模块 ]   通稿 Agent、审校 Agent 开发中，自动化作业', speed: 22 },
-  { type: 'case', text: '[ 内容模块 ]   理论稿 Bot 陈伯达已上线，生产效率显著提升', speed: 22 },
-  { type: 'case', text: '[ 新媒体模块 ] 口播号小王子，新媒体分发内容自动拆分',      speed: 22 },
-  { type: 'case', text: '[ BP 模块    ] Agent 全流程辅助，热点追踪 & 选题策划',    speed: 22 },
-  { type: 'blank' },
-
-  { type: 'dim',  text: '──────────────────────────────────────', speed: 6 },
-  { type: 'blank', delay: 800 },
-
-  // --- 结束语 ---
-  { type: 'prompt',  text: '> 我们的目标',                           speed: 45, delay: 300 },
-  { type: 'blank' },
-  { type: 'ending', text: '所有的工作，想想用 AI 怎么做。',          speed: 65 },
-  { type: 'ending', text: '勇于探索，勇于试错。',                    speed: 65, delay: 200 },
-  { type: 'ending', text: '帮更多人用好 AI。',                       speed: 65, delay: 200 },
-  { type: 'ending', text: '做原生的 AI-PR。',                        speed: 65, delay: 200 },
-  { type: 'blank',  delay: 700 },
-  { type: 'status', text: '// STATUS: ONLINE  ✓',                    speed: 38, delay: 400 },
+// 7. SCRIPT ENGINE — auto-scroll FIXED (scrolls #content, not #terminal)
+const content=document.getElementById('content');
+const terminal=document.getElementById('terminal');
+const script=[
+  {type:'prompt',   text:'> \u6b63\u5728\u521d\u59cb\u5316 PR AI-STL \u534f\u4f5c\u7cfb\u7edf...', speed:28},
+  {type:'dim',      text:'\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500',speed:6},
+  {type:'blank'},
+  {type:'normal',   text:'\u5728 PR \u5de5\u4f5c\u7684\u6bcf\u4e2a\u73af\u8282\uff0c',speed:55},
+  {type:'highlight',text:'AI \u6b63\u5728\u6210\u4e3a\u65b0\u7684\u534f\u4f5c\u4f19\u4f34\u3002',speed:65},
+  {type:'blank'},
+  {type:'normal',   text:'PR AI-STL \u5c0f\u7ec4\uff0c',speed:55},
+  {type:'normal',   text:'\u662f\u4e00\u652f\u6765\u81ea\u8206\u60c5\u3001\u5185\u5bb9\u3001BP\u3001\u5a92\u4ecb\u5404\u6761\u7ebf\u7684',speed:40},
+  {type:'highlight',text:'\u8de8\u6a21\u5757\u7684\u865a\u62df\u56e2\u961f\u3002',speed:65},
+  {type:'blank'},
+  {type:'normal',   text:'\u6211\u4eec\u4ee5\u201c\u6700\u5c0f\u5316\u201d\u539f\u5219\u8fd0\u884c\uff0c',speed:50},
+  {type:'normal',   text:'\u4e0d\u5f00\u4f1a\u3001\u4e0d\u586b\u8868\uff0c\u53ea\u505a\u4e00\u4ef6\u4e8b\u2014\u2014',speed:50},
+  {type:'highlight',text:'\u628a AI \u5de5\u5177\u771f\u6b63\u7528\u8d77\u6765\uff0c',speed:60},
+  {type:'normal',   text:'\u63a2\u7d22\u4eba + Agent \u5bf9\u5de5\u4f5c\u6d41\u7a0b\u7684\u6539\u53d8\uff0c',speed:40},
+  {type:'normal',   text:'\u5e2e PR \u7684\u6bcf\u4e00\u9879\u5de5\u4f5c\u53d8\u5f97\u66f4\u5feb\u3001\u66f4\u6709\u529b\u3002',speed:40},
+  {type:'blank'},
+  {type:'dim',      text:'\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500',speed:6},
+  {type:'section',  text:'// \u5f53\u4e2d\u6587\u6210\u4e3a\u65b0\u7684\u7f16\u7a0b\u8bed\u8a00',speed:35,delay:300},
+  {type:'section',  text:'// \u8fd9\u662f\u6211\u4eec\u7684\u673a\u4f1a\uff0c\u4e5f\u662f\u6211\u4eec\u7684\u65b0\u8d77\u70b9\u3002',speed:35},
+  {type:'blank',    delay:1000},
+  {type:'prompt',   text:'> \u4e0a\u7ebf\u5de5\u5177\uff08\u542b\u5f00\u53d1\u4e2d\uff09\u2193',speed:32,delay:200},
+  {type:'blank'},
+  {type:'case',text:'[ \u8206\u60c5\u6a21\u5757 ]   AI \u6570\u636e\u63a5\u53e3 + \u867e\u81ea\u52a8\u8c03\u53d6\uff0c\u8bae\u9898\u8ffd\u8e2a\u63d0\u901f',speed:22},
+  {type:'case',text:'[ \u5185\u5bb9\u6a21\u5757 ]   \u901a\u7a3f Agent\u3001\u5ba1\u6821 Agent \u5f00\u53d1\u4e2d\uff0c\u81ea\u52a8\u5316\u4f5c\u4e1a',speed:22},
+  {type:'case',text:'[ \u5185\u5bb9\u6a21\u5757 ]   \u7406\u8bba\u7a3f Bot \u9648\u4f2f\u8fbe\u5df2\u4e0a\u7ebf\uff0c\u751f\u4ea7\u6548\u7387\u663e\u8457\u63d0\u5347',speed:22},
+  {type:'case',text:'[ \u65b0\u5a92\u4f53\u6a21\u5757 ] \u53e3\u64ad\u53f7\u5c0f\u738b\u5b50\uff0c\u65b0\u5a92\u4f53\u5206\u53d1\u5185\u5bb9\u81ea\u52a8\u62c6\u5206',speed:22},
+  {type:'case',text:'[ BP \u6a21\u5757    ] Agent \u5168\u6d41\u7a0b\u8f85\u52a9\uff0c\u70ed\u70b9\u8ffd\u8e2a & \u9009\u9898\u7b56\u5212',speed:22},
+  {type:'blank'},
+  {type:'dim',      text:'\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500',speed:6},
+  {type:'blank',    delay:800},
+  {type:'prompt',   text:'> \u6211\u4eec\u7684\u76ee\u6807',speed:45,delay:300},
+  {type:'blank'},
+  {type:'ending',   text:'\u6240\u6709\u7684\u5de5\u4f5c\uff0c\u60f3\u60f3\u7528 AI \u600e\u4e48\u505a\u3002',speed:65},
+  {type:'ending',   text:'\u52c7\u4e8e\u63a2\u7d22\uff0c\u52c7\u4e8e\u8bd5\u9519\u3002',speed:65,delay:200},
+  {type:'ending',   text:'\u5e2e\u66f4\u591a\u4eba\u7528\u597d AI\u3002',speed:65,delay:200},
+  {type:'ending',   text:'\u505a\u539f\u751f\u7684 AI-PR\u3002',speed:65,delay:200},
+  {type:'blank',    delay:700},
+  {type:'status',   text:'// STATUS: ONLINE  \u2713',speed:38,delay:400},
 ];
 
-const terminal = document.getElementById('terminal');
-
-async function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-async function runScript() {
+async function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+async function runScript(){
   await sleep(700);
-  for (let i = 0; i < script.length; i++) {
-    const item   = script[i];
-    const isLast = i === script.length - 1;
-    if (item.delay) await sleep(item.delay);
-
-    if (item.type === 'blank') {
-      const b = document.createElement('div');
-      b.className      = 'line dim';
-      b.style.opacity  = '1';
-      b.style.minHeight = '1em';
+  for(let i=0;i<script.length;i++){
+    const item=script[i], isLast=i===script.length-1;
+    if(item.delay) await sleep(item.delay);
+    if(item.type==='blank'){
+      const b=document.createElement('div');
+      b.className='line dim'; b.style.opacity='1'; b.style.minHeight='1em';
       terminal.appendChild(b);
-      terminal.scrollTop = terminal.scrollHeight;
-      await sleep(160);
-      continue;
+      content.scrollTop=content.scrollHeight;  // FIXED
+      await sleep(160); continue;
     }
-
-    const lineEl       = document.createElement('div');
-    lineEl.className   = 'line ' + item.type;
-    lineEl.style.opacity = '1';
+    const lineEl=document.createElement('div');
+    lineEl.className='line '+item.type; lineEl.style.opacity='1';
     terminal.appendChild(lineEl);
-    terminal.scrollTop = terminal.scrollHeight;
-
-    const cursor = document.createElement('span');
-    cursor.className = 'cursor';
-    lineEl.appendChild(cursor);
-
-    const speed = item.speed || 45;
-    for (const char of item.text) {
+    content.scrollTop=content.scrollHeight;    // FIXED
+    setTimeout(()=>{const r=lineEl.getBoundingClientRect();if(r.height>0)aimArmAt(r.top+r.height/2);},80);
+    const cursor=document.createElement('span');
+    cursor.className='cursor'; lineEl.appendChild(cursor);
+    const speed=item.speed||45;
+    for(const char of item.text){
       cursor.before(document.createTextNode(char));
-      await sleep(speed + (Math.random() * speed * 0.25 - speed * 0.12));
+      content.scrollTop=content.scrollHeight;  // keep current line visible while typing
+      await sleep(speed+(Math.random()*speed*.25-speed*.12));
     }
-    if (!isLast) cursor.remove();
+    if(!isLast) cursor.remove();
   }
 }
-
 window.addEventListener('load', runScript);
 </script>
 </body>
