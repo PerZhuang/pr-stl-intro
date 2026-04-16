@@ -40,28 +40,32 @@
   /* ── Joi character ── */
   #joi-img {
     position: fixed;
-    /* 图片2000px宽，手指约在横向50-65%处。
-       让图片高度撑满屏幕，宽度按比例自动：100vh * (2000/1124) ≈ 178vh
-       向左偏移让手指落在屏幕约55vw处 */
+    /*
+      图片原始 2000×1124，height:100vh width:auto → 渲染约1028×578px
+      手指在原图 x≈55%, y≈58% → 屏幕坐标约 43.7vw, 57.8vh
+      手指自然指向右侧文字区域
+    */
     top: 0;
-    left: calc(-178vh * 0.18);  /* 向左移18%图片宽度，让手指居中入镜 */
+    left: -5px;
     height: 100vh;
-    width: auto;                /* 宽度按比例自动，约178vh */
-    object-fit: unset;
+    width: auto;
     mix-blend-mode: screen;
     opacity: .92;
     filter: saturate(1.12) brightness(1.02);
     z-index: 12;
     pointer-events: none;
     animation: joiFloat 7s ease-in-out infinite;
-    /* 右侧渐隐：在55vw附近消融入文字区 */
+    /*
+      手指在元素内约568px处，mask从598px开始渐隐到718px消失。
+      上下边缘也渐隐（用百分比，因为高度=100vh是固定的）
+    */
     -webkit-mask-image:
-      linear-gradient(to right, black 0%, black 44%, rgba(0,0,0,.3) 56%, transparent 68%),
-      linear-gradient(to bottom, transparent 0%, black 5%, black 93%, transparent 100%);
+      linear-gradient(to right, black 0, black 650px, rgba(0,0,0,.3) 710px, transparent 780px),
+      linear-gradient(to bottom, transparent 0%, black 4%, black 94%, transparent 100%);
     -webkit-mask-composite: source-in;
     mask-image:
-      linear-gradient(to right, black 0%, black 44%, rgba(0,0,0,.3) 56%, transparent 68%),
-      linear-gradient(to bottom, transparent 0%, black 5%, black 93%, transparent 100%);
+      linear-gradient(to right, black 0, black 650px, rgba(0,0,0,.3) 710px, transparent 780px),
+      linear-gradient(to bottom, transparent 0%, black 4%, black 94%, transparent 100%);
     mask-composite: intersect;
   }
   @keyframes joiFloat {
@@ -72,7 +76,7 @@
   /* ── Fingertip glow — follows active line ── */
   #fingertip {
     position: fixed;
-    left: 55vw;   /* 手指尖落点约55vw */
+    left: 44vw;   /* 精确值：height:100vh时图片宽1028px，手指55%处=560px=43.7vw */
     top: 50vh;
     width: 0; height: 0;
     z-index: 16;
@@ -118,31 +122,34 @@
     width: 100%; height: 100%;
     display: flex; flex-direction: column;
     justify-content: flex-start; align-items: center;
-    padding: 55px 60px 55px 56vw;  /* 内容从56vw开始，紧接手指尖右侧 */
+    padding: 55px 20px 55px 46vw;
     overflow-y: auto; overflow-x: hidden;
+    perspective: 800px;
   }
   .terminal-block {
-    width: 100%; max-width: 960px;
+    width: 100%; max-width: 920px;
     display: flex; flex-direction: column; align-items: center;
+    transform: rotateY(-12deg);
+    transform-origin: left center;
   }
 
   /* ── Lines ── */
   .line {
-    font-size: 28px; line-height: 1.85; color: #00ff41;
-    white-space: nowrap; opacity: 0;
+    font-size: 26px; line-height: 1.85; color: #00ff41;
+    white-space: normal; opacity: 0;
     text-shadow: 0 0 8px #00ff41;
     min-height: 1.85em; text-align: center; width: 100%;
-    overflow: hidden; text-overflow: ellipsis;
+    overflow: visible;
   }
   .line.prompt   { color:#00aa22; font-size:22px; text-align:left; }
-  .line.highlight{ color:#aaffaa; font-size:32px; font-weight:bold;
+  .line.highlight{ color:#aaffaa; font-size:30px; font-weight:bold;
     text-shadow:0 0 16px #00ff41,0 0 32px #00ff41; text-align:center; }
   .line.dim      { color:#005510; font-size:20px; letter-spacing:2px; text-align:center; }
   .line.section  { color:#00dd33; font-size:20px; font-style:italic;
     text-align:center; text-shadow:0 0 10px #00ff41; }
   .line.case     { color:#00ee44; font-size:21px; text-align:left; padding-left:10px;
     white-space: nowrap; }
-  .line.ending   { color:#00ff41; font-size:32px; font-weight:bold;
+  .line.ending   { color:#00ff41; font-size:30px; font-weight:bold;
     text-shadow:0 0 20px #00ff41,0 0 40px #00ff41; text-align:center; }
   .line.status   { color:#00ff41; font-size:22px; text-align:center;
     letter-spacing:3px; text-shadow:0 0 12px #00ff41; }
@@ -280,8 +287,8 @@ class Particle {
 // ── TOUCH BEAM — drawn each frame ──
 let beamY = window.innerHeight * .5;    // current (animated) beam Y
 let beamTargetY = window.innerHeight * .5;
-const BEAM_X = window.innerWidth * .55;  // fingertip X = 55vw
-const TEXT_X  = window.innerWidth * .59; // beam延伸到文字区
+const BEAM_X = window.innerWidth * .44;  // fingertip X = 44vw（精确计算值）
+const TEXT_X  = window.innerWidth * .48; // beam延伸到文字区起始
 
 function drawBeam() {
   beamY += (beamTargetY - beamY) * .06;
