@@ -186,132 +186,153 @@
   /* ══ BOOT SCREEN ══ */
   #boot-screen {
     position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: #000;
+    inset: 0;
+    /* 深绿色网格纹理背景，对标参考图 */
+    background: #0a130a;
+    background-image:
+      linear-gradient(rgba(0,255,65,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,65,.04) 1px, transparent 1px);
+    background-size: 32px 32px;
     z-index: 9999;
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
-  }
-  /* subtle scanline texture over boot */
-  #boot-screen::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: repeating-linear-gradient(
-      0deg, transparent, transparent 2px, rgba(0,255,65,.025) 2px, rgba(0,255,65,.025) 4px
-    );
-    pointer-events: none;
-  }
-  #boot-inner {
-    width: min(640px, 88vw);
     font-family: 'Courier New', monospace;
-    color: #00ff41;
   }
+  /* CRT scanline overlay */
+  #boot-screen::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 3px,
+      rgba(0,0,0,.18) 3px, rgba(0,0,0,.18) 4px
+    );
+    pointer-events: none; z-index: 1;
+  }
+  /* 外层边框容器 */
+  #boot-frame {
+    position: relative; z-index: 2;
+    width: min(760px, 90vw);
+    border: 1px solid rgba(0,255,65,.35);
+    border-radius: 8px;
+    padding: 48px 52px 40px;
+    background: rgba(0,10,2,.82);
+    box-shadow: 0 0 0 1px rgba(0,255,65,.08), inset 0 0 60px rgba(0,20,5,.6);
+  }
+  /* 标题 */
   #boot-title {
-    font-size: clamp(22px, 4vw, 38px);
+    text-align: center;
+    font-size: clamp(20px, 3.2vw, 32px);
     font-weight: bold;
-    letter-spacing: 0.18em;
-    text-align: center;
+    letter-spacing: .22em;
     color: #00ff88;
-    text-shadow: 0 0 18px #00ff88, 0 0 40px rgba(0,255,100,.5);
-    margin-bottom: 6px;
-    opacity: 0;
-    transition: opacity 0.4s ease;
-    animation: titlePulse 2.5s ease-in-out infinite;
+    text-shadow: 0 0 16px rgba(0,255,100,.7);
+    margin-bottom: 36px;
+    line-height: 1;
   }
-  @keyframes titlePulse {
-    0%,100% { text-shadow: 0 0 18px #00ff88, 0 0 40px rgba(0,255,100,.5); }
-    50%      { text-shadow: 0 0 28px #00ff88, 0 0 60px rgba(0,255,120,.8), 0 0 80px rgba(0,255,80,.3); }
+  #boot-cursor {
+    display: inline-block;
+    width: .65em; height: 1em;
+    background: #00ff88;
+    vertical-align: middle;
+    margin-left: 3px;
+    animation: bcBlink .75s step-end infinite;
+    box-shadow: 0 0 8px #00ff88;
   }
-  .boot-bracket { color: #ff8800; text-shadow: 0 0 12px #ff8800; }
-  #boot-subtitle {
-    display: block;
-    font-size: clamp(11px, 1.8vw, 14px);
-    letter-spacing: 0.35em;
-    color: #00cc44;
+  @keyframes bcBlink { 50%{ opacity:0 } }
+
+  /* 闪电图标 */
+  #boot-icon {
     text-align: center;
-    margin-top: 4px;
-    text-shadow: none;
-    animation: subtitleBlink 1.2s step-end infinite;
+    font-size: 48px;
+    margin-bottom: 28px;
+    line-height: 1;
+    filter: drop-shadow(0 0 12px rgba(255,160,60,.7));
+    animation: iconPulse 1.8s ease-in-out infinite;
   }
-  @keyframes subtitleBlink { 50% { opacity: 0.3 } }
-  #boot-divider {
-    color: #004422;
-    font-size: 13px;
-    letter-spacing: 1px;
-    margin: 14px 0 12px;
-    text-shadow: none;
+  @keyframes iconPulse {
+    0%,100%{ transform:scale(1);   filter:drop-shadow(0 0 10px rgba(255,160,60,.65)); }
+    50%    { transform:scale(1.08);filter:drop-shadow(0 0 22px rgba(255,180,60,.9)); }
   }
-  #boot-log {
-    min-height: 180px;
-    font-size: clamp(11px, 1.6vw, 13px);
-    line-height: 1.9;
-    color: #00aa33;
-    letter-spacing: 0.04em;
-  }
-  .boot-line {
-    opacity: 0;
-    animation: bootLineIn 0.18s ease forwards;
-  }
-  @keyframes bootLineIn {
-    from { opacity: 0; transform: translateX(-8px); }
-    to   { opacity: 1; transform: translateX(0); }
-  }
-  #boot-progress-wrap {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-top: 22px;
+
+  /* 进度条区域 */
+  #boot-bar-wrap {
+    margin-bottom: 6px;
   }
   #boot-bar-track {
-    flex: 1;
-    height: 10px;
-    background: #001a0a;
-    border: 1px solid #003318;
-    border-radius: 2px;
-    position: relative;
+    width: 100%;
+    height: 12px;
+    background: #000;
+    border: 1px solid rgba(255,255,255,.25);
+    border-radius: 1px;
     overflow: hidden;
+    position: relative;
   }
   #boot-bar-fill {
     height: 100%;
     width: 0%;
-    background: linear-gradient(90deg, #006622, #00ff66, #00ff88);
-    border-radius: 2px;
-    box-shadow: 0 0 8px #00ff66, 0 0 18px rgba(0,255,80,.4);
-    transition: width 0.08s linear;
+    background: linear-gradient(90deg, #006622 0%, #00dd55 60%, #00ff88 100%);
+    transition: width .09s linear;
     position: relative;
-    z-index: 1;
   }
-  /* moving shimmer on bar */
   #boot-bar-fill::after {
     content: '';
-    position: absolute;
-    top: 0; right: 0;
-    width: 40px; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent);
-    animation: barShimmer 0.6s linear infinite;
+    position: absolute; top:0; right:0;
+    width: 50px; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.4));
+    animation: shimmer .5s linear infinite;
   }
-  @keyframes barShimmer {
-    from { transform: translateX(-40px); }
-    to   { transform: translateX(0px); }
+  @keyframes shimmer { from{opacity:.4} 50%{opacity:1} to{opacity:.4} }
+  #boot-bar-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+    font-size: 11px;
+    letter-spacing: .12em;
+    color: #00aa44;
   }
-  #boot-pct {
-    font-size: 13px;
-    color: #00ff66;
-    min-width: 36px;
-    text-align: right;
-    text-shadow: 0 0 8px #00ff66;
-    font-weight: bold;
-    letter-spacing: 0.05em;
+  #boot-pct { color: #00ff66; font-weight: bold; }
+
+  /* 当前状态文字 */
+  #boot-status {
+    text-align: center;
+    font-size: clamp(12px, 1.8vw, 15px);
+    color: #00ff55;
+    letter-spacing: .08em;
+    margin: 22px 0 20px;
+    min-height: 1.4em;
+    text-shadow: 0 0 10px rgba(0,255,80,.5);
   }
+  #boot-status-cursor {
+    display: inline-block;
+    width: 8px; height: 14px;
+    background: #00ff55;
+    vertical-align: middle;
+    margin-left: 2px;
+    animation: bcBlink .75s step-end infinite;
+  }
+
+  /* 底部提示框 */
+  #boot-tip {
+    border: 1px solid rgba(0,255,65,.3);
+    border-radius: 3px;
+    padding: 11px 18px;
+    font-size: clamp(10px, 1.4vw, 12px);
+    color: #00cc44;
+    letter-spacing: .06em;
+    line-height: 1.5;
+    text-align: center;
+    background: rgba(0,30,8,.5);
+    min-height: 2.5em;
+    transition: opacity .3s;
+  }
+
   @keyframes bootFlash {
-    0%   { opacity: 1; }
-    30%  { opacity: 0; background: #0a2a0a; }
-    60%  { opacity: 1; }
-    80%  { opacity: 0.4; }
-    100% { opacity: 1; }
+    0%  { opacity:1; }
+    20% { opacity:0; background:#061206; }
+    50% { opacity:1; }
+    75% { opacity:.5; }
+    100%{ opacity:1; }
   }
 </style>
 </head>
@@ -319,22 +340,25 @@
 
 <!-- ══ BOOT SCREEN ══ -->
 <div id="boot-screen">
-  <div id="boot-inner">
-    <div id="boot-title">
-      <span class="boot-bracket">[</span>
-      PR&nbsp;AI&#8209;STL&nbsp;TEAM
-      <span class="boot-bracket">]</span>
-      <span id="boot-subtitle">INITIALIZING</span>
-    </div>
-    <div id="boot-divider">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</div>
-    <div id="boot-log"></div>
-    <div id="boot-progress-wrap">
+  <div id="boot-frame">
+    <!-- 标题 -->
+    <div id="boot-title">PR&nbsp;AI&#8209;STL&nbsp;TEAM<span id="boot-cursor"></span></div>
+    <!-- 闪电图标 -->
+    <div id="boot-icon">⚡</div>
+    <!-- 进度条 -->
+    <div id="boot-bar-wrap">
       <div id="boot-bar-track">
         <div id="boot-bar-fill"></div>
-        <div id="boot-bar-glow"></div>
       </div>
-      <span id="boot-pct">0%</span>
+      <div id="boot-bar-labels">
+        <span>PROGRESS</span>
+        <span id="boot-pct">0%</span>
+      </div>
     </div>
+    <!-- 当前状态 -->
+    <div id="boot-status">Initializing...<span id="boot-status-cursor"></span></div>
+    <!-- 底部提示 -->
+    <div id="boot-tip">Did you know? AI is transforming how PR teams work — one workflow at a time.</div>
   </div>
 </div>
 
@@ -617,74 +641,85 @@ async function runScript() {
 // 8. BOOT SCREEN
 // ════════════════════════════════════════
 async function runBoot() {
-  const boot = document.getElementById('boot-screen');
-  const bootLog = document.getElementById('boot-log');
-  const bar = document.getElementById('boot-bar-fill');
-  const pct = document.getElementById('boot-pct');
-  const bootTitle = document.getElementById('boot-title');
+  const boot   = document.getElementById('boot-screen');
+  const bar    = document.getElementById('boot-bar-fill');
+  const pct    = document.getElementById('boot-pct');
+  const status = document.getElementById('boot-status');
+  const tip    = document.getElementById('boot-tip');
 
-  const logLines = [
-    '> SYSTEM INIT ...................... OK',
-    '> LOADING AI CORE ................ OK',
-    '> PR MODULE DETECTED ............. OK',
-    '> CONNECTING STL AGENTS .......... OK',
-    '> LOADING CONTENT ENGINE ......... OK',
-    '> MATRIX RENDERER ................ OK',
-    '> CALIBRATING INTERFACE .......... OK',
-    '> ESTABLISHING SECURE CHANNEL .... OK',
-    '> ALL SYSTEMS NOMINAL',
+  // Status messages that cycle during loading
+  const steps = [
+    { pct:  6, msg: 'Checking system requirements...' },
+    { pct: 14, msg: 'Loading AI core modules...' },
+    { pct: 24, msg: 'Initializing PR workflows...' },
+    { pct: 35, msg: 'Connecting STL agent network...' },
+    { pct: 47, msg: 'Calibrating content engine...' },
+    { pct: 58, msg: 'Loading matrix renderer...' },
+    { pct: 68, msg: 'Establishing secure channel...' },
+    { pct: 78, msg: 'Syncing team knowledge base...' },
+    { pct: 88, msg: 'Compiling interface layer...' },
+    { pct: 96, msg: 'All systems nominal...' },
+    { pct:100, msg: '✓  READY' },
   ];
 
-  // Title blink-in
-  await sleep(200);
-  bootTitle.style.opacity = '1';
-  await sleep(300);
+  const tips = [
+    'Did you know? AI is transforming how PR teams work — one workflow at a time.',
+    'Tip: Claude Code can write, debug and iterate — autonomously.',
+    'PR × AI-STL: where content meets code.',
+    'Non-technical? AI-STL bridges the gap between ideas and execution.',
+    '当中文成为新的编程语言，这是我们的机会。',
+  ];
 
-  // Print log lines while progress bar fills
-  let progress = 0;
-  const totalDuration = 2800; // ms for full bar
-  const startTime = Date.now();
+  let tipIdx = 0;
+  const tipTimer = setInterval(() => {
+    tip.style.opacity = '0';
+    setTimeout(() => {
+      tipIdx = (tipIdx + 1) % tips.length;
+      tip.textContent = tips[tipIdx];
+      tip.style.opacity = '1';
+    }, 300);
+  }, 2200);
 
-  // Animate progress bar
-  function animateBar() {
-    const elapsed = Date.now() - startTime;
-    progress = Math.min(100, Math.round((elapsed / totalDuration) * 100));
-    bar.style.width = progress + '%';
-    pct.textContent = progress + '%';
-    if (progress < 100) requestAnimationFrame(animateBar);
-  }
-  requestAnimationFrame(animateBar);
+  const TOTAL = 3200; // ms total boot time
+  const start = Date.now();
+  let stepIdx = 0;
 
-  // Print log lines at intervals
-  for (let i = 0; i < logLines.length; i++) {
-    await sleep(totalDuration / logLines.length);
-    const div = document.createElement('div');
-    div.className = 'boot-line';
-    div.textContent = logLines[i];
-    bootLog.appendChild(div);
-    // Glitch color on last line
-    if (i === logLines.length - 1) {
-      div.style.color = '#00ff88';
-      div.style.fontWeight = 'bold';
-      div.style.textShadow = '0 0 12px #00ff88, 0 0 24px #00ff88';
+  await new Promise(resolve => {
+    function tick() {
+      const elapsed = Date.now() - start;
+      const p = Math.min(100, Math.round(elapsed / TOTAL * 100));
+      bar.style.width = p + '%';
+      pct.textContent = p + '%';
+
+      // Advance status message
+      if (stepIdx < steps.length && p >= steps[stepIdx].pct) {
+        const sc = document.getElementById('boot-status-cursor');
+        status.textContent = steps[stepIdx].msg;
+        if (sc) status.appendChild(sc);
+        stepIdx++;
+      }
+
+      if (p < 100) {
+        requestAnimationFrame(tick);
+      } else {
+        resolve();
+      }
     }
-  }
+    requestAnimationFrame(tick);
+  });
 
-  // Wait for bar to truly reach 100%
-  await sleep(400);
+  clearInterval(tipTimer);
+  await sleep(520);
 
-  // Flash effect
-  boot.style.animation = 'bootFlash 0.35s ease-out forwards';
-  await sleep(180);
-
-  // Slide up and out
-  boot.style.transition = 'transform 0.55s cubic-bezier(0.7,0,1,1), opacity 0.55s ease';
+  // Flash + slide out
+  boot.style.animation = 'bootFlash 0.4s ease-out forwards';
+  await sleep(220);
+  boot.style.transition = 'transform 0.6s cubic-bezier(0.7,0,1,1), opacity 0.6s ease';
   boot.style.transform = 'translateY(-100%)';
   boot.style.opacity = '0';
-  await sleep(560);
+  await sleep(620);
   boot.style.display = 'none';
 
-  // Now start main script
   runScript();
 }
 
