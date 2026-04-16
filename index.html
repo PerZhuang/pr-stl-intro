@@ -15,94 +15,121 @@
     height: 100vh;
   }
 
-  /* ── Canvas layers ── */
+  /* canvas layers */
   #matrix-canvas { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; }
   #fx-canvas     { position:fixed; top:0; left:0; width:100%; height:100%; z-index:8; pointer-events:none; }
 
-  /* ── Scanline sweep ── */
+  /* scanline sweep */
   #scanline {
     position:fixed; top:-3px; left:0; width:100%; height:3px;
-    background:linear-gradient(90deg,transparent 0%,rgba(255,140,60,.15) 10%,
-      rgba(255,140,60,.85) 50%,rgba(255,140,60,.15) 90%,transparent 100%);
+    background:linear-gradient(90deg,transparent 0%,rgba(255,140,60,.14) 10%,
+      rgba(255,140,60,.82) 50%,rgba(255,140,60,.14) 90%,transparent 100%);
     box-shadow:0 0 18px rgba(255,140,60,.7),0 0 40px rgba(255,100,20,.3);
     z-index:25; pointer-events:none; animation:scanDown 9s linear infinite;
   }
   @keyframes scanDown {
     0%{top:-3px;opacity:0} 4%{opacity:1} 96%{opacity:.8} 100%{top:100vh;opacity:0}
   }
-
-  /* ── CRT scanlines overlay ── */
   body::after {
     content:''; position:fixed; top:0; left:0; width:100%; height:100%;
-    background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.06) 2px,rgba(0,0,0,.06) 4px);
+    background:repeating-linear-gradient(0deg,transparent,transparent 2px,
+      rgba(0,0,0,.06) 2px,rgba(0,0,0,.06) 4px);
     z-index:30; pointer-events:none;
   }
 
-  /* ── Joi character image ── */
+  /* ── Joi character ── */
   #joi-img {
     position: fixed;
-    left: 0;
+    left: -5px;
     top: 0;
-    width: 56vw;
+    width: 43vw;
     height: 100vh;
     object-fit: cover;
-    object-position: left center;
+    object-position: 0% 8%;
+    mix-blend-mode: screen;
+    opacity: .92;
+    filter: saturate(1.12) brightness(1.02);
     z-index: 12;
     pointer-events: none;
-    mix-blend-mode: screen;
-    opacity: 0.92;
-    /* fade out right edge (background) and top/bottom edges */
+    animation: joiFloat 7s ease-in-out infinite;
     -webkit-mask-image:
-      linear-gradient(to right,
-        black    0%,
-        black   52%,
-        rgba(0,0,0,.55) 68%,
-        transparent 84%),
-      linear-gradient(to bottom,
-        transparent  0%,
-        black        6%,
-        black       92%,
-        transparent 100%);
+      linear-gradient(to right, black 0%, black 58%, rgba(0,0,0,.25) 74%, transparent 88%),
+      linear-gradient(to bottom, transparent 0%, black 5%, black 93%, transparent 100%);
     -webkit-mask-composite: source-in;
     mask-image:
-      linear-gradient(to right,
-        black    0%,
-        black   52%,
-        rgba(0,0,0,.55) 68%,
-        transparent 84%),
-      linear-gradient(to bottom,
-        transparent  0%,
-        black        6%,
-        black       92%,
-        transparent 100%);
+      linear-gradient(to right, black 0%, black 58%, rgba(0,0,0,.25) 74%, transparent 88%),
+      linear-gradient(to bottom, transparent 0%, black 5%, black 93%, transparent 100%);
     mask-composite: intersect;
-    /* subtle float animation */
-    animation: joiFloat 7s ease-in-out infinite;
-    filter: saturate(1.15) brightness(1.05);
   }
   @keyframes joiFloat {
     0%,100% { transform: translateY(0px) scale(1); }
-    50%     { transform: translateY(-8px) scale(1.008); }
+    50%     { transform: translateY(-7px) scale(1.006); }
   }
 
-  /* ── Content area ── */
+  /* ── Fingertip glow — follows active line ── */
+  #fingertip {
+    position: fixed;
+    left: 40vw;
+    top: 50vh;
+    width: 0; height: 0;
+    z-index: 16;
+    pointer-events: none;
+    transition: top .45s cubic-bezier(.25,.46,.45,.94);
+  }
+  #fingertip::before {
+    content: '';
+    position: absolute;
+    width: 28px; height: 28px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: radial-gradient(circle,
+      rgba(255,200,230,.95) 0%,
+      rgba(255,100,190,.65) 38%,
+      transparent 72%);
+    box-shadow: 0 0 12px rgba(255,130,210,.9), 0 0 30px rgba(255,80,180,.5),
+                0 0 60px rgba(200,50,160,.3);
+    animation: ftCore 1.8s ease-in-out infinite;
+  }
+  @keyframes ftCore {
+    0%,100%{ transform:translate(-50%,-50%) scale(1);   opacity:.88; }
+    50%    { transform:translate(-50%,-50%) scale(1.18); opacity:.65; }
+  }
+  /* expanding ring */
+  #fingertip::after {
+    content: '';
+    position: absolute;
+    width: 28px; height: 28px;
+    transform: translate(-50%, -50%) scale(1);
+    border: 1.5px solid rgba(255,120,200,.7);
+    border-radius: 50%;
+    animation: ftRing 1.8s ease-out infinite;
+  }
+  @keyframes ftRing {
+    0%  { transform:translate(-50%,-50%) scale(1);   opacity:.7; }
+    100%{ transform:translate(-50%,-50%) scale(3.2); opacity:0;  }
+  }
+
+  /* ── Content ── */
   #content {
-    position:relative; z-index:10; width:100%; height:100%;
-    display:flex; flex-direction:column;
-    justify-content:flex-start; align-items:center;
-    padding: 60px 80px 60px 50vw;
-    overflow-y:auto; overflow-x:hidden;
+    position: relative; z-index: 10;
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+    justify-content: flex-start; align-items: center;
+    padding: 55px 60px 55px 44vw;
+    overflow-y: auto; overflow-x: hidden;
   }
   .terminal-block {
-    width:100%; max-width:900px;
-    display:flex; flex-direction:column; align-items:center;
+    width: 100%; max-width: 960px;
+    display: flex; flex-direction: column; align-items: center;
   }
 
-  /* ── Line styles ── */
+  /* ── Lines ── */
   .line {
-    font-size:28px; line-height:1.85; color:#00ff41; white-space:pre-wrap;
-    opacity:0; text-shadow:0 0 8px #00ff41;
-    min-height:1.85em; text-align:center; width:100%;
+    font-size: 28px; line-height: 1.85; color: #00ff41;
+    white-space: nowrap; opacity: 0;
+    text-shadow: 0 0 8px #00ff41;
+    min-height: 1.85em; text-align: center; width: 100%;
+    overflow: hidden; text-overflow: ellipsis;
   }
   .line.prompt   { color:#00aa22; font-size:22px; text-align:left; }
   .line.highlight{ color:#aaffaa; font-size:32px; font-weight:bold;
@@ -110,23 +137,40 @@
   .line.dim      { color:#005510; font-size:20px; letter-spacing:2px; text-align:center; }
   .line.section  { color:#00dd33; font-size:20px; font-style:italic;
     text-align:center; text-shadow:0 0 10px #00ff41; }
-  .line.case     { color:#00ee44; font-size:22px; text-align:left; padding-left:20px; }
+  .line.case     { color:#00ee44; font-size:21px; text-align:left; padding-left:10px;
+    white-space: nowrap; }
   .line.ending   { color:#00ff41; font-size:32px; font-weight:bold;
     text-shadow:0 0 20px #00ff41,0 0 40px #00ff41; text-align:center; }
   .line.status   { color:#00ff41; font-size:22px; text-align:center;
     letter-spacing:3px; text-shadow:0 0 12px #00ff41; }
 
-  @keyframes rgbGlitch {
-    0%,100%{text-shadow:0 0 8px #00ff41;transform:none}
-    15%{text-shadow:-3px 0 rgba(255,0,120,.85),3px 0 rgba(0,180,255,.85),0 0 8px #00ff41;transform:translate(2px,0)}
-    35%{text-shadow:3px 0 rgba(255,0,120,.6),-2px 0 rgba(0,180,255,.6),0 0 8px #00ff41;transform:translate(-2px,0)}
-    55%{text-shadow:-1px 0 rgba(255,0,120,.4),0 0 8px #00ff41;transform:translate(1px,0)}
-    80%{text-shadow:0 0 8px #00ff41;transform:none}
+  /* touch-appear: pink flash when a line is "touched" into existence */
+  @keyframes touchAppear {
+    0%  { text-shadow: -2px 0 rgba(255,80,180,.9), 2px 0 rgba(255,200,230,.9),
+                       0 0 22px rgba(255,100,190,.8), 0 0 8px #00ff41; }
+    60% { text-shadow: 0 0 12px #00ff41; }
+    100%{ text-shadow: 0 0 8px #00ff41; }
   }
-  .line.glitch-anim{animation:rgbGlitch .2s steps(3) 2}
-  .cursor{display:inline-block;width:16px;height:28px;background:#00ff41;vertical-align:middle;
-    animation:blink .7s step-end infinite;box-shadow:0 0 8px #00ff41}
-  @keyframes blink{50%{opacity:0}}
+  .line.touch-appear { animation: touchAppear .55s ease-out forwards; }
+
+  /* rgb glitch on click */
+  @keyframes rgbGlitch {
+    0%,100%{ text-shadow:0 0 8px #00ff41; transform:none; }
+    15%{ text-shadow:-3px 0 rgba(255,0,120,.85),3px 0 rgba(0,180,255,.85),0 0 8px #00ff41;
+         transform:translate(2px,0); }
+    35%{ text-shadow:3px 0 rgba(255,0,120,.6),-2px 0 rgba(0,180,255,.6),0 0 8px #00ff41;
+         transform:translate(-2px,0); }
+    55%{ text-shadow:-1px 0 rgba(255,0,120,.4),0 0 8px #00ff41; transform:translate(1px,0); }
+    80%{ text-shadow:0 0 8px #00ff41; transform:none; }
+  }
+  .line.glitch-anim { animation: rgbGlitch .2s steps(3) 2; }
+
+  .cursor {
+    display:inline-block; width:16px; height:28px; background:#00ff41;
+    vertical-align:middle; animation:blink .7s step-end infinite;
+    box-shadow:0 0 8px #00ff41;
+  }
+  @keyframes blink { 50%{ opacity:0 } }
 </style>
 </head>
 <body>
@@ -135,23 +179,26 @@
 <canvas id="fx-canvas"></canvas>
 <div id="scanline"></div>
 
-<!-- Joi — mix-blend-mode:screen makes dark bg transparent, neon character floats -->
+<!-- Character image: mix-blend-mode:screen removes dark background -->
 <img id="joi-img" src="joi.jpg" alt="">
+
+<!-- Fingertip glow: smooth-follows each new text line -->
+<div id="fingertip"></div>
 
 <div id="content">
   <div class="terminal-block" id="terminal"></div>
 </div>
 
 <script>
-// ══════════════════════════════════════════════
+// ════════════════════════════════════════
 // 1. MATRIX RAIN
-// ══════════════════════════════════════════════
+// ════════════════════════════════════════
 const matCanvas = document.getElementById('matrix-canvas');
 const mctx = matCanvas.getContext('2d');
 matCanvas.width = window.innerWidth; matCanvas.height = window.innerHeight;
 const CHARS = '\u7684\u4e86\u662f\u5728\u548c\u6709\u5927\u8fd9\u56fd\u7ecf\u8981\u4eba\u5b9e\u73b0\u6570\u636e\u7b97\u6cd5\u5206\u6790\u8206\u60c5\u5185\u5bb9\u4f20\u64ad\u8fd0\u884c\u667a\u80fd\u534f\u4f5c01\u30a2\u30a4\u30a6\u30ab\u03a9\u2211\u03bb\u2592\u2593';
 const FS = 17, COLS = Math.floor(matCanvas.width / FS);
-const streams = Array.from({length:COLS}, () => ({
+const streams = Array.from({length: COLS}, () => ({
   y: Math.random() * matCanvas.height / FS,
   speed: .35 + Math.random() * .9,
   hue: Math.random() < .07 ? (Math.random() < .5 ? 'orange' : 'blue') : 'green',
@@ -160,103 +207,172 @@ const streams = Array.from({length:COLS}, () => ({
 let burstCol = -1;
 setInterval(() => { burstCol = Math.floor(Math.random() * COLS); }, 1100);
 function drawMatrix() {
-  mctx.fillStyle = 'rgba(0,0,0,0.05)'; mctx.fillRect(0,0,matCanvas.width,matCanvas.height);
+  mctx.fillStyle = 'rgba(0,0,0,0.05)';
+  mctx.fillRect(0, 0, matCanvas.width, matCanvas.height);
   mctx.font = FS + 'px monospace';
-  streams.forEach((s,i) => {
+  streams.forEach((s, i) => {
     const ch = CHARS[Math.floor(Math.random() * CHARS.length)], burst = i === burstCol;
     let color, alpha;
-    if (s.hue==='orange')    {color='#ff8c42';alpha=burst?.55:(s.bright?.32:.19);}
-    else if (s.hue==='blue') {color='#44aaff';alpha=burst?.50:(s.bright?.28:.17);}
-    else                     {color='#00ff41';alpha=burst?.60:(s.bright?.26:.17);}
+    if (s.hue==='orange')    { color='#ff8c42'; alpha=burst?.55:(s.bright?.32:.19); }
+    else if (s.hue==='blue') { color='#44aaff'; alpha=burst?.50:(s.bright?.28:.17); }
+    else                     { color='#00ff41'; alpha=burst?.60:(s.bright?.26:.17); }
     mctx.globalAlpha=alpha; mctx.fillStyle=color;
     mctx.fillText(ch, i*FS, s.y*FS); mctx.globalAlpha=1;
     s.y += s.speed;
     if (s.y*FS > matCanvas.height && Math.random() > .975) {
-      s.y=0; s.hue=Math.random()<.07?(Math.random()<.5?'orange':'blue'):'green'; s.bright=Math.random()>.82;
+      s.y=0;
+      s.hue = Math.random()<.07 ? (Math.random()<.5 ? 'orange' : 'blue') : 'green';
+      s.bright = Math.random() > .82;
     }
   });
 }
 setInterval(drawMatrix, 40);
 
-// ══════════════════════════════════════════════
-// 2. FX CANVAS — ripples & particles
-// ══════════════════════════════════════════════
+// ════════════════════════════════════════
+// 2. FX CANVAS — ripples, particles, beam
+// ════════════════════════════════════════
 const fxCanvas = document.getElementById('fx-canvas');
 const fx = fxCanvas.getContext('2d');
 fxCanvas.width = window.innerWidth; fxCanvas.height = window.innerHeight;
-const ripples=[], particles=[];
+const ripples = [], particles = [];
 
 class Ripple {
-  constructor(x,y){ this.x=x;this.y=y;this.life=1;
-    this.rings=[{r:0,speed:4.2,rgba:'255,140,60',lw:2},{r:0,speed:2.5,rgba:'200,80,255',lw:1.4},{r:0,speed:1.4,rgba:'0,255,100',lw:1}]; }
+  constructor(x, y, colorStr) {
+    this.x=x; this.y=y; this.life=1;
+    this.rings=[
+      {r:0, speed:4.2, rgba: colorStr || '255,140,60',  lw:2},
+      {r:0, speed:2.5, rgba:'200,80,255', lw:1.4},
+      {r:0, speed:1.4, rgba:'0,255,100',  lw:1},
+    ];
+  }
   update(){ this.life-=.016; this.rings.forEach(r=>r.r+=r.speed); }
-  draw(){ this.rings.forEach(ring=>{
-    const a=this.life*Math.max(0,1-ring.r/220); if(a<=0)return;
-    fx.beginPath(); fx.arc(this.x,this.y,ring.r,0,Math.PI*2);
-    fx.strokeStyle=`rgba(${ring.rgba},${a.toFixed(3)})`; fx.lineWidth=ring.lw;
-    fx.shadowBlur=12; fx.shadowColor=`rgba(${ring.rgba},.5)`; fx.stroke(); fx.shadowBlur=0;
-  }); }
+  draw(){
+    this.rings.forEach(ring=>{
+      const a=this.life*Math.max(0,1-ring.r/200); if(a<=0) return;
+      fx.beginPath(); fx.arc(this.x,this.y,ring.r,0,Math.PI*2);
+      fx.strokeStyle=`rgba(${ring.rgba},${a.toFixed(3)})`; fx.lineWidth=ring.lw;
+      fx.shadowBlur=10; fx.shadowColor=`rgba(${ring.rgba},.5)`; fx.stroke(); fx.shadowBlur=0;
+    });
+  }
   get dead(){ return this.life<=0; }
 }
 class Particle {
-  constructor(x,y){ const a=Math.random()*Math.PI*2,s=1.8+Math.random()*4.5;
-    this.x=x;this.y=y;this.vx=Math.cos(a)*s;this.vy=Math.sin(a)*s;
-    this.life=.8+Math.random()*.4; this.size=1.2+Math.random()*3;
-    const r=Math.random(); this.color=r<.45?'#ff66cc':r<.75?'#aa44ff':'#00ff88'; }
-  update(){ this.x+=this.vx;this.y+=this.vy;this.vy+=.07;this.vx*=.98;this.life-=.022;this.size*=.974; }
-  draw(){ fx.save();fx.globalAlpha=Math.max(0,this.life);fx.shadowBlur=10;fx.shadowColor=this.color;
-    fx.fillStyle=this.color;fx.beginPath();fx.arc(this.x,this.y,Math.max(0,this.size),0,Math.PI*2);fx.fill();fx.restore(); }
-  get dead(){ return this.life<=0||this.size<.15; }
+  constructor(x, y, colorBias) {
+    const a=Math.random()*Math.PI*2, s=1.5+Math.random()*4;
+    this.x=x; this.y=y; this.vx=Math.cos(a)*s; this.vy=Math.sin(a)*s;
+    this.life=.75+Math.random()*.4; this.size=1+Math.random()*2.5;
+    this.color = colorBias==='pink'
+      ? (Math.random()<.6 ? '#ff88cc' : '#cc44ff')
+      : (Math.random()<.45 ? '#ff66cc' : (Math.random()<.7 ? '#aa44ff' : '#00ff88'));
+  }
+  update(){ this.x+=this.vx; this.y+=this.vy; this.vy+=.06; this.vx*=.98; this.life-=.022; this.size*=.975; }
+  draw(){
+    fx.save(); fx.globalAlpha=Math.max(0,this.life);
+    fx.shadowBlur=8; fx.shadowColor=this.color; fx.fillStyle=this.color;
+    fx.beginPath(); fx.arc(this.x,this.y,Math.max(0,this.size),0,Math.PI*2); fx.fill(); fx.restore();
+  }
+  get dead(){ return this.life<=0||this.size<.1; }
 }
-(function fxLoop(){
-  fx.clearRect(0,0,fxCanvas.width,fxCanvas.height);
-  for(let i=ripples.length-1;i>=0;i--){ripples[i].update();ripples[i].draw();if(ripples[i].dead)ripples.splice(i,1);}
-  for(let i=particles.length-1;i>=0;i--){particles[i].update();particles[i].draw();if(particles[i].dead)particles.splice(i,1);}
+
+// ── TOUCH BEAM — drawn each frame ──
+let beamY = window.innerHeight * .5;    // current (animated) beam Y
+let beamTargetY = window.innerHeight * .5;
+const BEAM_X = window.innerWidth * .40;  // fingertip X = 40vw
+const TEXT_X  = window.innerWidth * .45; // text area start ≈ 44vw but beam extends to ~45vw
+
+function drawBeam() {
+  beamY += (beamTargetY - beamY) * .06;
+
+  // update CSS fingertip element
+  document.getElementById('fingertip').style.top = beamY + 'px';
+
+  const len = TEXT_X - BEAM_X;
+  if (len <= 0) return;
+
+  // horizontal beam (left 80% of beam, from fingertip toward text)
+  const grad = fx.createLinearGradient(BEAM_X, beamY, BEAM_X + len, beamY);
+  grad.addColorStop(0, 'rgba(255,120,200,.75)');
+  grad.addColorStop(.5, 'rgba(255,80,180,.35)');
+  grad.addColorStop(1, 'rgba(255,80,180,0)');
+  fx.beginPath();
+  fx.moveTo(BEAM_X, beamY);
+  fx.lineTo(BEAM_X + len, beamY);
+  fx.strokeStyle = grad;
+  fx.lineWidth = 1.5;
+  fx.shadowBlur = 8;
+  fx.shadowColor = 'rgba(255,100,200,.6)';
+  fx.stroke();
+  fx.shadowBlur = 0;
+}
+
+(function fxLoop() {
+  fx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
+  drawBeam();
+  for(let i=ripples.length-1;i>=0;i--){ ripples[i].update(); ripples[i].draw(); if(ripples[i].dead) ripples.splice(i,1); }
+  for(let i=particles.length-1;i>=0;i--){ particles[i].update(); particles[i].draw(); if(particles[i].dead) particles.splice(i,1); }
   requestAnimationFrame(fxLoop);
 })();
 
-// ══════════════════════════════════════════════
-// 3. CLICK INTERACTION
-// ══════════════════════════════════════════════
+// ════════════════════════════════════════
+// 3. TOUCH POINT — aim at active line
+// ════════════════════════════════════════
+function aimAt(lineEl) {
+  setTimeout(() => {
+    const r = lineEl.getBoundingClientRect();
+    if (r.height > 0) {
+      beamTargetY = r.top + r.height / 2;
+      // spawn a small pink ripple at the fingertip + a few particles (the "touch")
+      ripples.push(new Ripple(BEAM_X, beamTargetY, '255,120,200'));
+      for (let k = 0; k < 8; k++) particles.push(new Particle(BEAM_X, beamTargetY, 'pink'));
+    }
+  }, 60);
+}
+
+// ════════════════════════════════════════
+// 4. CLICK INTERACTION
+// ════════════════════════════════════════
 document.addEventListener('click', e => {
   ripples.push(new Ripple(e.clientX, e.clientY));
-  for(let i=0;i<22;i++) particles.push(new Particle(e.clientX, e.clientY));
+  for (let i=0; i<20; i++) particles.push(new Particle(e.clientX, e.clientY));
   document.querySelectorAll('.line').forEach(el => {
     const r = el.getBoundingClientRect();
-    if(Math.abs((r.top+r.bottom)/2 - e.clientY) < 120){
+    if (Math.abs((r.top+r.bottom)/2 - e.clientY) < 120) {
       el.classList.add('glitch-anim');
-      el.addEventListener('animationend',()=>el.classList.remove('glitch-anim'),{once:true});
+      el.addEventListener('animationend', () => el.classList.remove('glitch-anim'), {once:true});
     }
   });
 });
 
-// ══════════════════════════════════════════════
-// 4. PERIODIC AUTO-GLITCH
-// ══════════════════════════════════════════════
-(function autoGlitch(){
-  const vis=Array.from(document.querySelectorAll('.line')).filter(el=>parseFloat(el.style.opacity)>0);
-  if(vis.length){const t=vis[Math.floor(Math.random()*vis.length)];
+// ════════════════════════════════════════
+// 5. PERIODIC GLITCH
+// ════════════════════════════════════════
+(function autoGlitch() {
+  const vis = Array.from(document.querySelectorAll('.line')).filter(el=>parseFloat(el.style.opacity)>0);
+  if (vis.length) {
+    const t = vis[Math.floor(Math.random()*vis.length)];
     t.classList.add('glitch-anim');
-    t.addEventListener('animationend',()=>t.classList.remove('glitch-anim'),{once:true});}
-  setTimeout(autoGlitch,2800+Math.random()*4200);
+    t.addEventListener('animationend', ()=>t.classList.remove('glitch-anim'), {once:true});
+  }
+  setTimeout(autoGlitch, 3000 + Math.random()*4500);
 })();
 
-// ══════════════════════════════════════════════
-// 5. AMBIENT FLICKER
-// ══════════════════════════════════════════════
-(function flicker(){
-  matCanvas.style.opacity=(.16+Math.random()*.08).toFixed(3);
-  setTimeout(flicker,80+Math.random()*320);
+// ════════════════════════════════════════
+// 6. AMBIENT FLICKER
+// ════════════════════════════════════════
+(function flicker() {
+  matCanvas.style.opacity = (.16 + Math.random()*.08).toFixed(3);
+  setTimeout(flicker, 80 + Math.random()*320);
 })();
 
-// ══════════════════════════════════════════════
-// 6. SCRIPT ENGINE  (auto-scroll fixed)
-// ══════════════════════════════════════════════
+// ════════════════════════════════════════
+// 7. SCRIPT ENGINE — auto-scroll fixed
+// ════════════════════════════════════════
 const content  = document.getElementById('content');
 const terminal = document.getElementById('terminal');
-const script=[
+
+const script = [
   {type:'prompt',   text:'> \u6b63\u5728\u521d\u59cb\u5316 PR AI-STL \u534f\u4f5c\u7cfb\u7edf...',speed:28},
-  {type:'dim',      text:'\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500',speed:6},
+  {type:'dim',      text:'\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500',speed:6},
   {type:'blank'},
   {type:'normal',   text:'\u5728 PR \u5de5\u4f5c\u7684\u6bcf\u4e2a\u73af\u8282\uff0c',speed:55},
   {type:'highlight',text:'AI \u6b63\u5728\u6210\u4e3a\u65b0\u7684\u534f\u4f5c\u4f19\u4f34\u3002',speed:65},
@@ -271,19 +387,19 @@ const script=[
   {type:'normal',   text:'\u63a2\u7d22\u4eba + Agent \u5bf9\u5de5\u4f5c\u6d41\u7a0b\u7684\u6539\u53d8\uff0c',speed:40},
   {type:'normal',   text:'\u5e2e PR \u7684\u6bcf\u4e00\u9879\u5de5\u4f5c\u53d8\u5f97\u66f4\u5feb\u3001\u66f4\u6709\u529b\u3002',speed:40},
   {type:'blank'},
-  {type:'dim',      text:'\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500',speed:6},
+  {type:'dim',      text:'\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500',speed:6},
   {type:'section',  text:'// \u5f53\u4e2d\u6587\u6210\u4e3a\u65b0\u7684\u7f16\u7a0b\u8bed\u8a00',speed:35,delay:300},
   {type:'section',  text:'// \u8fd9\u662f\u6211\u4eec\u7684\u673a\u4f1a\uff0c\u4e5f\u662f\u6211\u4eec\u7684\u65b0\u8d77\u70b9\u3002',speed:35},
   {type:'blank',    delay:1000},
   {type:'prompt',   text:'> \u4e0a\u7ebf\u5de5\u5177\uff08\u542b\u5f00\u53d1\u4e2d\uff09\u2193',speed:32,delay:200},
   {type:'blank'},
-  {type:'case',text:'[ \u8206\u60c5\u6a21\u5757 ]   AI \u6570\u636e\u63a5\u53e3 + \u867e\u81ea\u52a8\u8c03\u53d6\uff0c\u8bae\u9898\u8ffd\u8e2a\u63d0\u901f',speed:22},
-  {type:'case',text:'[ \u5185\u5bb9\u6a21\u5757 ]   \u901a\u7a3f Agent\u3001\u5ba1\u6821 Agent \u5f00\u53d1\u4e2d\uff0c\u81ea\u52a8\u5316\u4f5c\u4e1a',speed:22},
-  {type:'case',text:'[ \u5185\u5bb9\u6a21\u5757 ]   \u7406\u8bba\u7a3f Bot \u9648\u4f2f\u8fbe\u5df2\u4e0a\u7ebf\uff0c\u751f\u4ea7\u6548\u7387\u663e\u8457\u63d0\u5347',speed:22},
+  {type:'case',text:'[ \u8206\u60c5\u6a21\u5757 ]  AI \u6570\u636e\u63a5\u53e3 + \u867e\u81ea\u52a8\u8c03\u53d6\uff0c\u8bae\u9898\u8ffd\u8e2a\u63d0\u901f',speed:22},
+  {type:'case',text:'[ \u5185\u5bb9\u6a21\u5757 ]  \u901a\u7a3f Agent\u3001\u5ba1\u6821 Agent \u5f00\u53d1\u4e2d\uff0c\u81ea\u52a8\u5316\u4f5c\u4e1a',speed:22},
+  {type:'case',text:'[ \u5185\u5bb9\u6a21\u5757 ]  \u7406\u8bba\u7a3f Bot \u9648\u4f2f\u8fbe\u5df2\u4e0a\u7ebf\uff0c\u751f\u4ea7\u6548\u7387\u663e\u8457\u63d0\u5347',speed:22},
   {type:'case',text:'[ \u65b0\u5a92\u4f53\u6a21\u5757 ] \u53e3\u64ad\u53f7\u5c0f\u738b\u5b50\uff0c\u65b0\u5a92\u4f53\u5206\u53d1\u5185\u5bb9\u81ea\u52a8\u62c6\u5206',speed:22},
-  {type:'case',text:'[ BP \u6a21\u5757    ] Agent \u5168\u6d41\u7a0b\u8f85\u52a9\uff0c\u70ed\u70b9\u8ffd\u8e2a & \u9009\u9898\u7b56\u5212',speed:22},
+  {type:'case',text:'[ BP \u6a21\u5757   ]  Agent \u5168\u6d41\u7a0b\u8f85\u52a9\uff0c\u70ed\u70b9\u8ffd\u8e2a & \u9009\u9898\u7b56\u5212',speed:22},
   {type:'blank'},
-  {type:'dim',      text:'\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500',speed:6},
+  {type:'dim',      text:'\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500',speed:6},
   {type:'blank',    delay:800},
   {type:'prompt',   text:'> \u6211\u4eec\u7684\u76ee\u6807',speed:45,delay:300},
   {type:'blank'},
@@ -295,34 +411,45 @@ const script=[
   {type:'status',   text:'// STATUS: ONLINE  \u2713',speed:38,delay:400},
 ];
 
-async function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
-async function runScript(){
+async function sleep(ms){ return new Promise(r => setTimeout(r,ms)); }
+
+async function runScript() {
   await sleep(700);
-  for(let i=0;i<script.length;i++){
-    const item=script[i], isLast=i===script.length-1;
-    if(item.delay) await sleep(item.delay);
-    if(item.type==='blank'){
+  for (let i=0; i<script.length; i++) {
+    const item=script[i], isLast=(i===script.length-1);
+    if (item.delay) await sleep(item.delay);
+
+    if (item.type==='blank') {
       const b=document.createElement('div');
       b.className='line dim'; b.style.opacity='1'; b.style.minHeight='1em';
       terminal.appendChild(b);
       content.scrollTop=content.scrollHeight;
       await sleep(160); continue;
     }
+
     const lineEl=document.createElement('div');
     lineEl.className='line '+item.type; lineEl.style.opacity='1';
     terminal.appendChild(lineEl);
     content.scrollTop=content.scrollHeight;
+
+    // ── touch interaction: aim beam + ripple + pink appear flash ──
+    aimAt(lineEl);
+    lineEl.classList.add('touch-appear');
+    lineEl.addEventListener('animationend', ()=>lineEl.classList.remove('touch-appear'), {once:true});
+
     const cursor=document.createElement('span');
     cursor.className='cursor'; lineEl.appendChild(cursor);
+
     const speed=item.speed||45;
-    for(const char of item.text){
+    for (const char of item.text) {
       cursor.before(document.createTextNode(char));
       content.scrollTop=content.scrollHeight;
       await sleep(speed+(Math.random()*speed*.25-speed*.12));
     }
-    if(!isLast) cursor.remove();
+    if (!isLast) cursor.remove();
   }
 }
+
 window.addEventListener('load', runScript);
 </script>
 </body>
