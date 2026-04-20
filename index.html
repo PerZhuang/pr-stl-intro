@@ -350,7 +350,7 @@
 <div id="unlock-overlay" style="
   position:fixed;inset:0;z-index:99999;
   display:flex;align-items:center;justify-content:center;
-  background:rgba(0,0,0,0.85);cursor:pointer;
+  background:rgba(0,0,0,1);cursor:pointer;
   flex-direction:column;gap:18px;
 ">
   <div style="font-family:'Courier New',monospace;color:#00ff41;font-size:clamp(16px,2.5vw,22px);
@@ -372,7 +372,9 @@
       const a = document.getElementById('audio-' + id);
       if (a) { a.play().then(() => a.pause()).catch(() => {}); }
     });
-    // 点击后才启动动画
+    // 点击后启动所有动画
+    window._matrixInterval = setInterval(drawMatrix, 40);
+    requestAnimationFrame(fxLoop);
     runBoot();
   }, {once: true});
 </script>
@@ -452,7 +454,8 @@ function drawMatrix() {
     }
   });
 }
-setInterval(drawMatrix, 40);
+// matrix 等点击后启动，见 unlock handler
+window._matrixInterval = null;
 
 // ════════════════════════════════════════
 // 2. FX CANVAS — ripples, particles, beam
@@ -536,7 +539,8 @@ function drawBeam() {
   drawBeam();
   for(let i=ripples.length-1;i>=0;i--){ ripples[i].update(); ripples[i].draw(); if(ripples[i].dead) ripples.splice(i,1); }
   for(let i=particles.length-1;i>=0;i--){ particles[i].update(); particles[i].draw(); if(particles[i].dead) particles.splice(i,1); }
-  requestAnimationFrame(fxLoop);
+  // fxLoop 等点击后启动
+  window._fxLoopStarted = false;
 })();
 
 // ════════════════════════════════════════
