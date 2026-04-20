@@ -65,11 +65,11 @@
     */
     /* 图片宽1028px，left:-130px，人物右边缘约898px，mask从700px开始渐隐 */
     -webkit-mask-image:
-      linear-gradient(to right, black 0, black 34vw, rgba(0,0,0,.3) 39vw, transparent 43vw),
+      linear-gradient(to right, black 0, black 46vw, rgba(0,0,0,.3) 51vw, transparent 56vw),
       linear-gradient(to bottom, transparent 0%, black 4%, black 94%, transparent 100%);
     -webkit-mask-composite: source-in;
     mask-image:
-      linear-gradient(to right, black 0, black 34vw, rgba(0,0,0,.3) 39vw, transparent 43vw),
+      linear-gradient(to right, black 0, black 46vw, rgba(0,0,0,.3) 51vw, transparent 56vw),
       linear-gradient(to bottom, transparent 0%, black 4%, black 94%, transparent 100%);
     mask-composite: intersect;
   }
@@ -81,7 +81,7 @@
   /* ── Fingertip glow — follows active line ── */
   #fingertip {
     position: fixed;
-    left: 40vw;   /* 2001图：图片42vw宽，光束从右边缘发出 */
+    left: 53vw;   /* 2001图：图片55vw宽，光束从右边缘发出 */
     top: 50vh;
     width: 0; height: 0;
     z-index: 16;
@@ -127,7 +127,7 @@
     width: 100%; height: 100%;
     display: flex; flex-direction: column;
     justify-content: flex-start; align-items: center;
-    padding: 55px 0px 55px 44vw;  /* 文字区从44vw开始，图片42vw右侧 */
+    padding: 55px 0px 55px 57vw;  /* 文字区从57vw开始，图片55vw右侧 */
     overflow-y: hidden; overflow-x: hidden;
     perspective: 900px;
     clip-path: inset(0 0 0 0);
@@ -510,8 +510,8 @@ class Particle {
 // ── TOUCH BEAM — drawn each frame ──
 let beamY = window.innerHeight * .5;    // current (animated) beam Y
 let beamTargetY = window.innerHeight * .5;
-const BEAM_X = window.innerWidth * .40;  // fingertip X = 40vw
-const TEXT_X  = window.innerWidth * .45; // beam延伸到文字区起始
+const BEAM_X = window.innerWidth * .53;  // fingertip X = 53vw
+const TEXT_X  = window.innerWidth * .58; // beam延伸到文字区起始
 
 function drawBeam() {
   beamY += (beamTargetY - beamY) * .06;
