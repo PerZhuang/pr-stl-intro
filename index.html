@@ -534,14 +534,13 @@ function drawBeam() {
   fx.shadowBlur = 0;
 }
 
-(function fxLoop() {
+function fxLoop() {
   fx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
   drawBeam();
   for(let i=ripples.length-1;i>=0;i--){ ripples[i].update(); ripples[i].draw(); if(ripples[i].dead) ripples.splice(i,1); }
   for(let i=particles.length-1;i>=0;i--){ particles[i].update(); particles[i].draw(); if(particles[i].dead) particles.splice(i,1); }
-  // fxLoop 等点击后启动
-  window._fxLoopStarted = false;
-})();
+  requestAnimationFrame(fxLoop);
+}
 
 // ════════════════════════════════════════
 // 3. TOUCH POINT — aim at active line
