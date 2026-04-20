@@ -90,36 +90,33 @@
     transition: top .45s cubic-bezier(.25,.46,.45,.94);
   }
   #fingertip::before {
-    content: '';
+    content: '🛸';
     position: absolute;
-    width: 28px; height: 28px;
-    transform: translate(-50%, -50%);
-    border-radius: 50%;
-    background: radial-gradient(circle,
-      rgba(255,200,230,.95) 0%,
-      rgba(255,100,190,.65) 38%,
-      transparent 72%);
-    box-shadow: 0 0 12px rgba(255,130,210,.9), 0 0 30px rgba(255,80,180,.5),
-                0 0 60px rgba(200,50,160,.3);
-    animation: ftCore 1.8s ease-in-out infinite;
+    font-size: 28px;
+    line-height: 1;
+    transform: translate(-50%, -50%) rotate(-35deg);
+    filter: drop-shadow(0 0 8px rgba(180,220,255,.9))
+            drop-shadow(0 0 20px rgba(100,180,255,.6))
+            drop-shadow(0 0 40px rgba(60,140,255,.35));
+    animation: ftShip 2.4s ease-in-out infinite;
   }
-  @keyframes ftCore {
-    0%,100%{ transform:translate(-50%,-50%) scale(1);   opacity:.88; }
-    50%    { transform:translate(-50%,-50%) scale(1.18); opacity:.65; }
+  @keyframes ftShip {
+    0%,100%{ transform:translate(-50%,-50%) rotate(-35deg) scale(1);    filter:drop-shadow(0 0 8px rgba(180,220,255,.9)) drop-shadow(0 0 20px rgba(100,180,255,.6)); }
+    50%    { transform:translate(-50%,-50%) rotate(-35deg) scale(1.15);  filter:drop-shadow(0 0 14px rgba(200,240,255,1)) drop-shadow(0 0 35px rgba(120,200,255,.8)); }
   }
-  /* expanding ring */
+  /* 飞船尾焰扩散环 */
   #fingertip::after {
     content: '';
     position: absolute;
-    width: 28px; height: 28px;
+    width: 24px; height: 24px;
     transform: translate(-50%, -50%) scale(1);
-    border: 1.5px solid rgba(255,120,200,.7);
+    border: 1.5px solid rgba(100,200,255,.6);
     border-radius: 50%;
-    animation: ftRing 1.8s ease-out infinite;
+    animation: ftRing 2s ease-out infinite;
   }
   @keyframes ftRing {
-    0%  { transform:translate(-50%,-50%) scale(1);   opacity:.7; }
-    100%{ transform:translate(-50%,-50%) scale(3.2); opacity:0;  }
+    0%  { transform:translate(-50%,-50%) scale(1);   opacity:.6; }
+    100%{ transform:translate(-50%,-50%) scale(3.5); opacity:0;  }
   }
 
   /* ── Content ── */
