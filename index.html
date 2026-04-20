@@ -390,6 +390,8 @@
 </head>
 <body>
 
+<!-- ══ BGM ══ -->
+<audio id="audio-bgm" preload="auto" loop><source src="audio/bgm.mp3" type="audio/mpeg"></audio>
 <!-- ══ INTRO AUDIO SEGMENTS ══ -->
 <audio id="audio-a" preload="auto"><source src="audio/a.mp3" type="audio/mpeg"></audio>
 <audio id="audio-b" preload="auto"><source src="audio/b.mp3" type="audio/mpeg"></audio>
@@ -419,13 +421,26 @@
     window._audioUnlocked = true;
     this.style.display = 'none';
     // 预热所有 audio 元素（解锁浏览器自动播放限制）
-    ['a','b','c','d','e'].forEach(id => {
+    ['bgm','a','b','c','d','e'].forEach(id => {
       const a = document.getElementById('audio-' + id);
       if (a) { a.play().then(() => a.pause()).catch(() => {}); }
     });
     // 点击后启动所有动画
     window._matrixInterval = setInterval(drawMatrix, 40);
     requestAnimationFrame(fxLoop);
+    // BGM 淡入
+    const bgm = document.getElementById('audio-bgm');
+    if (bgm && window._audioUnlocked) {
+      bgm.volume = 0;
+      bgm.play().catch(() => {});
+      let vol = 0;
+      const fadeIn = setInterval(() => {
+        vol = Math.min(0.25, vol + 0.01);
+        bgm.volume = vol;
+        if (vol >= 0.25) clearInterval(fadeIn);
+      }, 150);
+      window._bgm = bgm;
+    }
     runBoot();
   }, {once: true});
 </script>
@@ -738,9 +753,22 @@ async function runScript() {
       const seg = document.getElementById('audio-' + item.audioId);
       if (seg) {
         seg.currentTime = 0;
+        // 语音播放时压低 BGM
+        if (window._bgm) window._bgm.volume = 0.07;
         seg.play().then(() => {
           window._currentAudio = seg;
         }).catch(() => {});
+        // 语音结束后恢复 BGM
+        seg.addEventListener('ended', () => {
+          if (window._bgm) {
+            let v = window._bgm.volume;
+            const restore = setInterval(() => {
+              v = Math.min(0.25, v + 0.01);
+              window._bgm.volume = v;
+              if (v >= 0.25) clearInterval(restore);
+            }, 100);
+          }
+        }, { once: true });
       }
     }
     // ── touch interaction: aim beam + ripple + pink appear flash ──
