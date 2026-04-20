@@ -59,13 +59,13 @@
       手指在元素内约568px处，mask从598px开始渐隐到718px消失。
       上下边缘也渐隐（用百分比，因为高度=100vh是固定的）
     */
-    /* 图片宽1028px，手指在565px处，mask从590px开始渐隐 */
+    /* 图片宽1028px，left:-130px，人物右边缘约898px，mask从700px开始渐隐 */
     -webkit-mask-image:
-      linear-gradient(to right, black 0, black 450px, rgba(0,0,0,.3) 510px, transparent 580px),
+      linear-gradient(to right, black 0, black 700px, rgba(0,0,0,.3) 760px, transparent 830px),
       linear-gradient(to bottom, transparent 0%, black 4%, black 94%, transparent 100%);
     -webkit-mask-composite: source-in;
     mask-image:
-      linear-gradient(to right, black 0, black 450px, rgba(0,0,0,.3) 510px, transparent 580px),
+      linear-gradient(to right, black 0, black 700px, rgba(0,0,0,.3) 760px, transparent 830px),
       linear-gradient(to bottom, transparent 0%, black 4%, black 94%, transparent 100%);
     mask-composite: intersect;
   }
