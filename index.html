@@ -436,9 +436,9 @@
       bgm.play().then(() => {
         let vol = 0.01;
         const fadeIn = setInterval(() => {
-          vol = Math.min(0.25, vol + 0.01);
+          vol = Math.min(0.55, vol + 0.01);
           bgm.volume = vol;
-          if (vol >= 0.25) clearInterval(fadeIn);
+          if (vol >= 0.55) clearInterval(fadeIn);
         }, 150);
       }).catch(e => { console.warn('BGM play failed:', e); });
     }
@@ -755,7 +755,7 @@ async function runScript() {
       if (seg) {
         seg.currentTime = 0;
         // 语音播放时压低 BGM
-        if (window._bgm) window._bgm.volume = 0.07;
+        if (window._bgm) window._bgm.volume = 0.12;
         seg.play().then(() => {
           window._currentAudio = seg;
         }).catch(() => {});
@@ -764,9 +764,9 @@ async function runScript() {
           if (window._bgm) {
             let v = window._bgm.volume;
             const restore = setInterval(() => {
-              v = Math.min(0.25, v + 0.01);
+              v = Math.min(0.55, v + 0.01);
               window._bgm.volume = v;
-              if (v >= 0.25) clearInterval(restore);
+              if (v >= 0.55) clearInterval(restore);
             }, 100);
           }
         }, { once: true });
