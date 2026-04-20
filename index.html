@@ -348,6 +348,35 @@
 <audio id="audio-s6" preload="auto"><source src="audio/s6.mp3" type="audio/mpeg"></audio>
 <audio id="audio-s7" preload="auto"><source src="audio/s7.mp3" type="audio/mpeg"></audio>
 
+<!-- ══ AUDIO UNLOCK OVERLAY ══ -->
+<div id="unlock-overlay" style="
+  position:fixed;inset:0;z-index:99999;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(0,0,0,0.85);cursor:pointer;
+  flex-direction:column;gap:18px;
+">
+  <div style="font-family:'Courier New',monospace;color:#00ff41;font-size:clamp(16px,2.5vw,22px);
+    text-shadow:0 0 12px #00ff41;letter-spacing:.12em;text-align:center;">
+    ▶ &nbsp;CLICK TO INITIALIZE
+  </div>
+  <div style="font-family:'Courier New',monospace;color:#00aa33;font-size:clamp(11px,1.4vw,14px);
+    letter-spacing:.08em;">
+    // PR AI-STL SYSTEM LOADING...
+  </div>
+</div>
+<script>
+  window._audioUnlocked = false;
+  document.getElementById('unlock-overlay').addEventListener('click', function() {
+    window._audioUnlocked = true;
+    this.style.display = 'none';
+    // 预热所有 audio 元素（解锁浏览器自动播放限制）
+    ['s1','s2','s3','s4','s5','s6','s7'].forEach(id => {
+      const a = document.getElementById('audio-' + id);
+      if (a) { a.play().then(() => a.pause()).catch(() => {}); }
+    });
+  }, {once: true});
+</script>
+
 <!-- ══ BOOT SCREEN ══ -->
 <div id="boot-screen">
   <div id="boot-frame">
@@ -630,22 +659,23 @@ async function runScript() {
     content.scrollTop=content.scrollHeight;
 
     // ── audio segment trigger ──
-    // 如果需要等待上一段音频结束
-    if (item.waitAudio && window._currentAudio && !window._currentAudio.ended) {
-      await new Promise(resolve => {
-        const a = window._currentAudio;
-        if (a.ended) { resolve(); return; }
-        a.addEventListener('ended', resolve, {once: true});
-        // 最多等15秒，防止卡死
-        setTimeout(resolve, 15000);
-      });
+    // 如果需要等待上一段音频结束（play失败则直接跳过）
+    if (item.waitAudio && window._currentAudio) {
+      const a = window._currentAudio;
+      if (!a.ended && !a.paused && window._audioUnlocked) {
+        await new Promise(resolve => {
+          a.addEventListener('ended', resolve, {once: true});
+          setTimeout(resolve, 15000); // 最多等15秒防卡死
+        });
+      }
     }
-    if (item.audioId) {
+    if (item.audioId && window._audioUnlocked) {
       const seg = document.getElementById('audio-' + item.audioId);
       if (seg) {
         seg.currentTime = 0;
-        seg.play().catch(() => {});
-        window._currentAudio = seg;
+        seg.play().then(() => {
+          window._currentAudio = seg;
+        }).catch(() => {});
       }
     }
     // ── touch interaction: aim beam + ripple + pink appear flash ──
