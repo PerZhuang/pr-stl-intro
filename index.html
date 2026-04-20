@@ -60,7 +60,8 @@
     filter: saturate(1.12) brightness(1.02);
     z-index: 12;
     pointer-events: none;
-    animation: joiFloat 7s ease-in-out infinite;
+    animation: spaceFloat 12s ease-in-out infinite;
+    transition: transform 0.15s ease-out;
     /*
       手指在元素内约568px处，mask从598px开始渐隐到718px消失。
       上下边缘也渐隐（用百分比，因为高度=100vh是固定的）
@@ -341,6 +342,50 @@
     75% { opacity:.5; }
     100%{ opacity:1; }
   }
+
+  /* ── 太空漂浮 ── */
+  @keyframes spaceFloat {
+    0%,100% { transform: translateY(0px) scale(1); }
+    30%      { transform: translateY(-12px) scale(1.008); }
+    70%      { transform: translateY(8px) scale(0.995); }
+  }
+
+  /* ── 扫描线覆层 ── */
+  #scan-line {
+    position: fixed; top: 0; left: 0;
+    width: 45vw; height: 3px;
+    background: linear-gradient(to bottom, transparent, rgba(100,200,255,0.35), transparent);
+    z-index: 13; pointer-events: none;
+    animation: scanDown 6s linear infinite;
+    box-shadow: 0 0 8px rgba(100,200,255,0.4);
+  }
+  @keyframes scanDown {
+    0%   { top: -4px; opacity: 0; }
+    5%   { opacity: 1; }
+    95%  { opacity: 1; }
+    100% { top: 100vh; opacity: 0; }
+  }
+
+  /* ── glitch ── */
+  @keyframes glitchShift {
+    0%,100% { clip-path: inset(0 0 100% 0); transform: translate(0); }
+    10%     { clip-path: inset(15% 0 60% 0); transform: translate(-4px, 2px); }
+    20%     { clip-path: inset(40% 0 30% 0); transform: translate(4px, -2px); }
+    30%     { clip-path: inset(70% 0 5%  0); transform: translate(-2px, 1px); }
+    40%,90% { clip-path: inset(0 0 100% 0); transform: translate(0); }
+  }
+  #joi-glitch {
+    position: fixed; top: 0; left: 0;
+    width: 45vw; height: 100vh;
+    object-fit: cover; object-position: center center;
+    z-index: 14; pointer-events: none;
+    opacity: 0;
+    filter: hue-rotate(180deg) saturate(3) brightness(1.5);
+  }
+  #joi-glitch.active {
+    opacity: 0.7;
+    animation: glitchShift 0.18s steps(1) forwards;
+  }
 </style>
 </head>
 <body>
@@ -415,6 +460,8 @@
 
 <!-- Character image: mix-blend-mode:screen removes dark background -->
 <img id="joi-img" src="joi.jpg" alt="">
+<div id="scan-line"></div>
+<img id="joi-glitch" src="joi.jpg" alt="">
 
 <!-- Fingertip glow: smooth-follows each new text line -->
 <div id="fingertip"></div>
@@ -799,6 +846,31 @@ async function runBoot() {
 
   runScript();
 }
+
+
+// ── 鼠标视差 ──
+document.addEventListener('mousemove', function(e) {
+  const img = document.getElementById('joi-img');
+  if (!img) return;
+  const cx = window.innerWidth * 0.225;
+  const cy = window.innerHeight * 0.5;
+  const dx = (e.clientX - cx) / window.innerWidth;
+  const dy = (e.clientY - cy) / window.innerHeight;
+  img.style.transform = 'translate(' + (-dx*18) + 'px,' + (-dy*12) + 'px)';
+});
+
+// ── 定时 glitch ──
+(function scheduleGlitch() {
+  const delay = 3000 + Math.random() * 7000;
+  setTimeout(function() {
+    const g = document.getElementById('joi-glitch');
+    if (g) {
+      g.classList.add('active');
+      setTimeout(function() { g.classList.remove('active'); }, 220);
+    }
+    scheduleGlitch();
+  }, delay);
+})();
 
 // 等待用户点击覆层后才启动（见 unlock-overlay click handler）
 </script>
