@@ -428,9 +428,9 @@
     // 点击后启动所有动画
     window._matrixInterval = setInterval(drawMatrix, 40);
     requestAnimationFrame(fxLoop);
-    // BGM 淡入
+    // BGM 淡入（点击本身即是 unlock，无需判断 _audioUnlocked）
     const bgm = document.getElementById('audio-bgm');
-    if (bgm && window._audioUnlocked) {
+    if (bgm) {
       bgm.volume = 0;
       bgm.play().catch(() => {});
       let vol = 0;
