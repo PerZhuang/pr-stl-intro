@@ -4,13 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PR AI-STL 小组介绍</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { overflow: hidden; }
   body {
     background: #000;
     color: #00ff41;
-    font-family: 'Courier New', 'SimHei', monospace;
+    font-family: 'JetBrains Mono', 'Noto Sans SC', 'Courier New', monospace;
     overflow: hidden;
     width: 100vw;
     height: 100vh;
@@ -199,7 +202,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: 'Courier New', monospace;
+    font-family: 'JetBrains Mono', 'Noto Sans SC', monospace;
   }
   /* CRT scanline overlay */
   #boot-screen::after {
@@ -354,11 +357,11 @@
   background:rgba(0,0,0,1);cursor:pointer;
   flex-direction:column;gap:18px;
 ">
-  <div style="font-family:'Courier New',monospace;color:#00ff41;font-size:clamp(16px,2.5vw,22px);
+  <div style="font-family:'JetBrains Mono','Noto Sans SC',monospace;color:#00ff41;font-size:clamp(16px,2.5vw,22px);
     text-shadow:0 0 12px #00ff41;letter-spacing:.12em;text-align:center;">
     ▶ &nbsp;CLICK TO INITIALIZE
   </div>
-  <div style="font-family:'Courier New',monospace;color:#00aa33;font-size:clamp(11px,1.4vw,14px);
+  <div style="font-family:'JetBrains Mono','Noto Sans SC',monospace;color:#00aa33;font-size:clamp(11px,1.4vw,14px);
     letter-spacing:.08em;">
     // PR AI-STL SYSTEM LOADING...
   </div>
@@ -750,9 +753,9 @@ async function runBoot() {
       tip.textContent = tips[tipIdx];
       tip.style.opacity = '1';
     }, 300);
-  }, 2200);
+  }, 1000);
 
-  const TOTAL = 3200; // ms total boot time
+  const TOTAL = 1500; // ms total boot time
   const start = Date.now();
   let stepIdx = 0;
 
@@ -781,15 +784,15 @@ async function runBoot() {
   });
 
   clearInterval(tipTimer);
-  await sleep(520);
+  await sleep(200);
 
   // Flash + slide out
-  boot.style.animation = 'bootFlash 0.4s ease-out forwards';
-  await sleep(220);
-  boot.style.transition = 'transform 0.6s cubic-bezier(0.7,0,1,1), opacity 0.6s ease';
+  boot.style.animation = 'bootFlash 0.2s ease-out forwards';
+  await sleep(120);
+  boot.style.transition = 'transform 0.35s cubic-bezier(0.7,0,1,1), opacity 0.35s ease';
   boot.style.transform = 'translateY(-100%)';
   boot.style.opacity = '0';
-  await sleep(620);
+  await sleep(400);
   boot.style.display = 'none';
 
   runScript();
