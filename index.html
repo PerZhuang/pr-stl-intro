@@ -830,7 +830,7 @@ async function runBoot() {
     }, 300);
   }, 1000);
 
-  const TOTAL = 1500; // ms total boot time
+  const TOTAL = 3000; // ms total boot time
   const start = Date.now();
   let stepIdx = 0;
 
@@ -859,15 +859,15 @@ async function runBoot() {
   });
 
   clearInterval(tipTimer);
-  await sleep(200);
+  await sleep(800);
 
   // Flash + slide out
-  boot.style.animation = 'bootFlash 0.2s ease-out forwards';
-  await sleep(120);
-  boot.style.transition = 'transform 0.35s cubic-bezier(0.7,0,1,1), opacity 0.35s ease';
+  boot.style.animation = 'bootFlash 0.4s ease-out forwards';
+  await sleep(300);
+  boot.style.transition = 'transform 0.7s cubic-bezier(0.7,0,1,1), opacity 0.7s ease';
   boot.style.transform = 'translateY(-100%)';
   boot.style.opacity = '0';
-  await sleep(400);
+  await sleep(750);
   boot.style.display = 'none';
 
   runScript();
