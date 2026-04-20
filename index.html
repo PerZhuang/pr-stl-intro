@@ -90,19 +90,18 @@
     transition: top .45s cubic-bezier(.25,.46,.45,.94);
   }
   #fingertip::before {
-    content: '🛸';
+    content: '';
     position: absolute;
-    font-size: 28px;
-    line-height: 1;
-    transform: translate(-50%, -50%) rotate(-35deg);
-    filter: drop-shadow(0 0 8px rgba(180,220,255,.9))
-            drop-shadow(0 0 20px rgba(100,180,255,.6))
-            drop-shadow(0 0 40px rgba(60,140,255,.35));
+    width: 56px; height: 22px;
+    transform: translate(-50%, -50%) rotate(-30deg);
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 22'%3E%3C!-- 细长桁架 --%3E%3Crect x='14' y='10' width='34' height='2' fill='%23a0c8e8' opacity='0.9'/%3E%3C!-- 球形指挥舱 --%3E%3Ccircle cx='11' cy='11' r='7' fill='none' stroke='%23c8e4f8' stroke-width='1.2'/%3E%3Ccircle cx='11' cy='11' r='4' fill='%23d4ecff' opacity='0.6'/%3E%3Ccircle cx='9' cy='9' r='1.5' fill='%23ffffff' opacity='0.4'/%3E%3C!-- 中段结构环 --%3E%3Crect x='28' y='8' width='2' height='6' rx='1' fill='%2388b8d8' opacity='0.8'/%3E%3Crect x='36' y='8' width='2' height='6' rx='1' fill='%2388b8d8' opacity='0.8'/%3E%3C!-- 推进器 --%3E%3Cellipse cx='49' cy='11' rx='4' ry='3' fill='none' stroke='%2378a8c8' stroke-width='1'/%3E%3Cellipse cx='51' cy='11' rx='2' ry='1.5' fill='%23b0d4f0' opacity='0.7'/%3E%3C!-- 推进光焰 --%3E%3Cellipse cx='54' cy='11' rx='2.5' ry='1.2' fill='%2380c8ff' opacity='0.5'/%3E%3C/svg%3E") no-repeat center/contain;
+    filter: drop-shadow(0 0 6px rgba(160,210,255,.9))
+            drop-shadow(0 0 18px rgba(100,180,255,.6));
     animation: ftShip 2.4s ease-in-out infinite;
   }
   @keyframes ftShip {
-    0%,100%{ transform:translate(-50%,-50%) rotate(-35deg) scale(1);    filter:drop-shadow(0 0 8px rgba(180,220,255,.9)) drop-shadow(0 0 20px rgba(100,180,255,.6)); }
-    50%    { transform:translate(-50%,-50%) rotate(-35deg) scale(1.15);  filter:drop-shadow(0 0 14px rgba(200,240,255,1)) drop-shadow(0 0 35px rgba(120,200,255,.8)); }
+    0%,100%{ transform:translate(-50%,-50%) rotate(-30deg) scale(1);    filter:drop-shadow(0 0 6px rgba(160,210,255,.9)) drop-shadow(0 0 18px rgba(100,180,255,.5)); }
+    50%    { transform:translate(-50%,-50%) rotate(-30deg) scale(1.1);   filter:drop-shadow(0 0 10px rgba(200,235,255,1)) drop-shadow(0 0 28px rgba(130,200,255,.8)); }
   }
   /* 飞船尾焰扩散环 */
   #fingertip::after {
