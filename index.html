@@ -603,7 +603,7 @@ const script = [
   {type:'normal',   text:'PR AI-STL \u5c0f\u7ec4\uff0c',speed:38},
   {type:'normal',   text:'\u662f\u4e00\u652f\u6765\u81ea\u8206\u60c5\u3001\u5185\u5bb9\u3001BP\u3001\u5a92\u4ecb\u5404\u6761\u7ebf\u7684',speed:35},
   {type:'highlight',text:'\u8de8\u6a21\u5757\u7684\u865a\u62df\u56e2\u961f\u3002',speed:45},
-  {type:'blank',    delay:400},
+  {type:'blank',    delay:400, waitUntil:13.3},
   {type:'normal',   text:'\u6211\u4eec\u4ee5\u201c\u6700\u5c0f\u5316\u201d\u539f\u5219\u8fd0\u884c\uff0c',speed:38},
   {type:'normal',   text:'\u4e0d\u5f00\u4f1a\u3001\u4e0d\u586b\u8868\uff0c\u53ea\u505a\u4e00\u4ef6\u4e8b\u2014\u2014',speed:38},
   {type:'highlight',text:'\u628a AI \u5de5\u5177\u771f\u6b63\u7528\u8d77\u6765\uff0c',speed:42},
@@ -656,15 +656,27 @@ async function runScript() {
     content.scrollTop=content.scrollHeight;
 
     // ── audio segment trigger ──
-    // 如果需要等待上一段音频结束（play失败则直接跳过）
+    // 等待上一段音频结束
     if (item.waitAudio && window._currentAudio) {
       const a = window._currentAudio;
       if (!a.ended && !a.paused && window._audioUnlocked) {
         await new Promise(resolve => {
           a.addEventListener('ended', resolve, {once: true});
-          setTimeout(resolve, 15000); // 最多等15秒防卡死
+          setTimeout(resolve, 15000);
         });
       }
+    }
+    // 等待音频播放到指定时间点
+    if (item.waitUntil && window._currentAudio && window._audioUnlocked) {
+      const a = window._currentAudio;
+      await new Promise(resolve => {
+        const check = () => {
+          if (a.ended || a.currentTime >= item.waitUntil) { resolve(); return; }
+          setTimeout(check, 50);
+        };
+        setTimeout(resolve, 20000); // 最多等20s
+        check();
+      });
     }
     if (item.audioId && window._audioUnlocked) {
       const seg = document.getElementById('audio-' + item.audioId);
