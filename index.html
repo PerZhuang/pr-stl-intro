@@ -372,6 +372,8 @@
       const a = document.getElementById('audio-' + id);
       if (a) { a.play().then(() => a.pause()).catch(() => {}); }
     });
+    // 点击后才启动动画
+    runBoot();
   }, {once: true});
 </script>
 
@@ -789,7 +791,7 @@ async function runBoot() {
   runScript();
 }
 
-window.addEventListener('load', runBoot);
+// 等待用户点击覆层后才启动（见 unlock-overlay click handler）
 </script>
 </body>
 </html>
