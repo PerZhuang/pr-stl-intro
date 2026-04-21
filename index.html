@@ -669,41 +669,46 @@ const script = [
   {type:'prompt',   text:'> 正在初始化 PR AI-STL 协作系统...',speed:35,delay:200},
   {type:'dim',      text:'──────────────────────────────',speed:6},
   {type:'blank'},
-  {type:'normal',   text:'PR AI-STL小组，',speed:45, audioId:'a'},
-  {type:'normal',   text:'来自舆情、内容、BP、媒介各条线。',speed:42},
-  {type:'blank',    delay:250},
-  {type:'normal',   text:'我们以最小化原则运行，',speed:40, waitAudio:true, audioId:'b'},
-  {type:'highlight',text:'把AI工具真正用起来。',speed:44},
-  {type:'blank',    delay:400},
-  {type:'section',  text:'// 当中文成为新的编程语言',speed:40, waitAudio:true, audioId:'c'},
-  {type:'section',  text:'// 这是我们的新机会。',speed:42},
-  {type:'blank',    delay:400},
-  {type:'prompt',   text:'> 上线工具逐步上线 ↓',speed:32,delay:100, waitAudio:true, audioId:'d'},
+  {type:'normal',   text:'PR AI-STL 小组，',speed:38, audioId:'a'},
+  {type:'normal',   text:'是一支来自舆情、内容、BP、媒介各条线的',speed:35},
+  {type:'highlight',text:'跨模块的虚拟团队。',speed:45},
+  {type:'blank',    delay:200},
+  {type:'normal',   text:'我们以"最小化"原则运行，',speed:38, waitAudio:true, audioId:'b'},
+  {type:'normal',   text:'不开会、不填表，只做一件事——',speed:38},
+  {type:'highlight',text:'把 AI 工具真正用起来，',speed:42},
+  {type:'normal',   text:'探索人 + Agent 对工作流程的改变，',speed:38},
+  {type:'normal',   text:'帮 PR 的每一项工作变得更快、更有力。',speed:38},
+  {type:'blank',    delay:200},
+  {type:'dim',      text:'──────────────────────────────',speed:6},
+  {type:'blank',    delay:200},
+  {type:'section',  text:'// 当中文成为新的编程语言',speed:38, waitAudio:true, audioId:'c'},
+  {type:'section',  text:'// 这是我们的机会，也是我们的新起点。',speed:38},
+  {type:'blank',    delay:200},
+  {type:'prompt',   text:'> 上线工具（含开发中）↓',speed:32,delay:100, waitAudio:true, audioId:'d'},
   {type:'blank'},
-  {type:'case',text:'[ 舆情模块 ]  AI 数据接口 + 虹自动调用',speed:22},
-  {type:'case',text:'[ 内容模块 ]  通稿 Agent、审稿 Agent 开发中',speed:22},
-  {type:'case',text:'[ 新媒体模块 ] 口播号小助手，内容自动拆分',speed:22},
+  {type:'case',text:'[ 舆情模块 ]  AI 数据接口 + 虹自动调用，舆情追踪提速',speed:22},
+  {type:'case',text:'[ 内容模块 ]  通稿 Agent、审稿 Agent 开发中，作业效率提升',speed:22},
+  {type:'case',text:'[ 新媒体模块 ] 口播号小助手，新媒体分发内容自动拆分',speed:22},
   {type:'case',text:'[ BP 模块   ]  Agent 全流程辅助，热点追踪 & 选题策划',speed:22},
   {type:'blank'},
   {type:'dim',      text:'──────────────────────────────',speed:6},
-  {type:'blank',    delay:400},
-  {type:'prompt',   text:'> 我们的目标',speed:32,delay:80, waitAudio:true, audioId:'e'},
+  {type:'blank',    delay:200},
+  {type:'prompt',   text:'> 我们的目标',speed:32,delay:100, waitAudio:true, audioId:'e'},
   {type:'blank'},
-  {type:'ending',   text:'所有工作，想想用AI怎么做。',speed:50},
-  {type:'ending',   text:'勇于探索，勇于试错。',speed:50,delay:200},
-  {type:'ending',   text:'帮更多伙伴用好AI。',speed:50,delay:200},
-  {type:'ending',   text:'做原生的 AI-PR。',speed:50,delay:250},
-  {type:'blank',    delay:300},
-  {type:'status',   text:'// STATUS: ONLINE  ✓',speed:38,delay:150},
+  {type:'ending',   text:'所有的工作，想用 AI 怎么做。',speed:65},
+  {type:'ending',   text:'勇于探索，勇于试错。',speed:65,delay:300},
+  {type:'ending',   text:'帮更多伙伴用好 AI。',speed:65,delay:300},
+  {type:'ending',   text:'做原生的 AI-PR。',speed:65,delay:300},
+  {type:'blank',    delay:500},
+  {type:'status',   text:'// STATUS: ONLINE  ✓',speed:38,delay:300},
 ];
-
 
 
 
 async function sleep(ms){ return new Promise(r => setTimeout(r,ms)); }
 
 async function runScript() {
-  await sleep(700);
+  await sleep(200);
   for (let i=0; i<script.length; i++) {
     const item=script[i], isLast=(i===script.length-1);
     if (item.delay) await sleep(item.delay);
