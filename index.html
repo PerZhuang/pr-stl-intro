@@ -666,41 +666,41 @@ const content  = document.getElementById('content');
 const terminal = document.getElementById('terminal');
 
 const script = [
-  {type:'prompt',   text:'> 正在初始化 PR AI-STL 协作系统...',speed:35,delay:100},
-  {type:'dim',      text:'──────────────────────────────',speed:16},
+  {type:'prompt',   text:'> 正在初始化 PR AI-STL 协作系统...',speed:13,delay:50},
+  {type:'dim',      text:'──────────────────────────────',speed:10},
   {type:'blank'},
-  {type:'normal',   text:'PR AI-STL 小组，',speed:20, audioId:'a'},
-  {type:'normal',   text:'是一支来自舆情、内容、BP、媒介各条线的',speed:19},
-  {type:'highlight',text:'跨模块的虚拟团队。',speed:24},
-  {type:'blank',    delay:200},
-  {type:'normal',   text:'我们以"最小化"原则运行，',speed:20, waitAudio:true, audioId:'b'},
-  {type:'normal',   text:'不开会、不填表，只做一件事——',speed:20},
-  {type:'highlight',text:'把 AI 工具真正用起来，',speed:23},
-  {type:'normal',   text:'探索人 + Agent 对工作流程的改变，',speed:20},
-  {type:'normal',   text:'帮 PR 的每一项工作变得更快、更有力。',speed:20},
-  {type:'blank',    delay:200},
-  {type:'dim',      text:'──────────────────────────────',speed:16},
-  {type:'blank',    delay:200},
-  {type:'section',  text:'// 当中文成为新的编程语言',speed:20, waitAudio:true, audioId:'c'},
-  {type:'section',  text:'// 这是我们的机会，也是我们的新起点。',speed:20},
-  {type:'blank',    delay:200},
-  {type:'prompt',   text:'> 上线工具（含开发中）↓',speed:32,delay:60, waitAudio:true, audioId:'d'},
+  {type:'normal',   text:'PR AI-STL 小组，',speed:14, audioId:'a'},
+  {type:'normal',   text:'是一支来自舆情、内容、BP、媒介各条线的',speed:13},
+  {type:'highlight',text:'跨模块的虚拟团队。',speed:17},
+  {type:'blank',    delay:80},
+  {type:'normal',   text:'我们以"最小化"原则运行，',speed:14, waitAudio:true, audioId:'b'},
+  {type:'normal',   text:'不开会、不填表，只做一件事——',speed:14},
+  {type:'highlight',text:'把 AI 工具真正用起来，',speed:15},
+  {type:'normal',   text:'探索人 + Agent 对工作流程的改变，',speed:14},
+  {type:'normal',   text:'帮 PR 的每一项工作变得更快、更有力。',speed:14},
+  {type:'blank',    delay:80},
+  {type:'dim',      text:'──────────────────────────────',speed:10},
+  {type:'blank',    delay:80},
+  {type:'section',  text:'// 当中文成为新的编程语言',speed:14, waitAudio:true, audioId:'c'},
+  {type:'section',  text:'// 这是我们的机会，也是我们的新起点。',speed:14},
+  {type:'blank',    delay:80},
+  {type:'prompt',   text:'> 上线工具（含开发中）↓',speed:12,delay:50, waitAudio:true, audioId:'d'},
   {type:'blank'},
-  {type:'case',text:'[ 舆情模块 ]  AI 数据接口 + 虹自动调用，舆情追踪提速',speed:16},
-  {type:'case',text:'[ 内容模块 ]  通稿 Agent、审稿 Agent 开发中，作业效率提升',speed:16},
-  {type:'case',text:'[ 新媒体模块 ] 口播号小助手，新媒体分发内容自动拆分',speed:16},
-  {type:'case',text:'[ BP 模块   ]  Agent 全流程辅助，热点追踪 & 选题策划',speed:16},
+  {type:'case',text:'[ 舆情模块 ]  AI 数据接口 + 虹自动调用，舆情追踪提速',speed:10},
+  {type:'case',text:'[ 内容模块 ]  通稿 Agent、审稿 Agent 开发中，作业效率提升',speed:10},
+  {type:'case',text:'[ 新媒体模块 ] 口播号小助手，新媒体分发内容自动拆分',speed:10},
+  {type:'case',text:'[ BP 模块   ]  Agent 全流程辅助，热点追踪 & 选题策划',speed:10},
   {type:'blank'},
-  {type:'dim',      text:'──────────────────────────────',speed:16},
+  {type:'dim',      text:'──────────────────────────────',speed:10},
+  {type:'blank',    delay:80},
+  {type:'prompt',   text:'> 我们的目标',speed:12,delay:50, waitAudio:true, audioId:'e'},
+  {type:'blank'},
+  {type:'ending',   text:'所有的工作，想用 AI 怎么做。',speed:24},
+  {type:'ending',   text:'勇于探索，勇于试错。',speed:24,delay:50},
+  {type:'ending',   text:'帮更多伙伴用好 AI。',speed:24,delay:50},
+  {type:'ending',   text:'做原生的 AI-PR。',speed:24,delay:50},
   {type:'blank',    delay:200},
-  {type:'prompt',   text:'> 我们的目标',speed:32,delay:60, waitAudio:true, audioId:'e'},
-  {type:'blank'},
-  {type:'ending',   text:'所有的工作，想用 AI 怎么做。',speed:35},
-  {type:'ending',   text:'勇于探索，勇于试错。',speed:65,delay:150},
-  {type:'ending',   text:'帮更多伙伴用好 AI。',speed:65,delay:150},
-  {type:'ending',   text:'做原生的 AI-PR。',speed:65,delay:150},
-  {type:'blank',    delay:500},
-  {type:'status',   text:'// STATUS: ONLINE  ✓',speed:38,delay:150},
+  {type:'status',   text:'// STATUS: ONLINE  ✓',speed:14,delay:50},
 ];
 
 
@@ -708,7 +708,7 @@ const script = [
 async function sleep(ms){ return new Promise(r => setTimeout(r,ms)); }
 
 async function runScript() {
-  await sleep(200);
+  await sleep(150);
   for (let i=0; i<script.length; i++) {
     const item=script[i], isLast=(i===script.length-1);
     if (item.delay) await sleep(item.delay);
@@ -832,7 +832,7 @@ async function runBoot() {
     }, 300);
   }, 1000);
 
-  const TOTAL = 1500; // ms total boot time (压缩到1.5s)
+  const TOTAL = 1200;
   const start = Date.now();
   let stepIdx = 0;
 
