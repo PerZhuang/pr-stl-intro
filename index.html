@@ -707,7 +707,7 @@ const script = [
 async function sleep(ms){ return new Promise(r => setTimeout(r,ms)); }
 
 async function runScript() {
-  await sleep(700);
+  await sleep(200);
   for (let i=0; i<script.length; i++) {
     const item=script[i], isLast=(i===script.length-1);
     if (item.delay) await sleep(item.delay);
