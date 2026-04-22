@@ -234,16 +234,16 @@
   }
 
   /* ── 轨道成员：围绕圆心散开（半径 ~140px）── */
-    .member-card:nth-child(2) { --angle: 28deg;   animation-delay: .25s; }  /* 侯雯 */
-  .member-card:nth-child(3) { --angle: 80deg;   animation-delay: .35s; }  /* 王泽宇 */
-  .member-card:nth-child(4) { --angle: 132deg;  animation-delay: .45s; }  /* 赵智明 */
-  .member-card:nth-child(5) { --angle: 188deg;  animation-delay: .55s; }  /* 王宜家 */
-  .member-card:nth-child(6) { --angle: 240deg;  animation-delay: .65s; }  /* 张家瑄 */
-  .member-card:nth-child(7) { --angle: 292deg;  animation-delay: .75s; }  /* 李栋 */
+    .member-card:nth-child(2) { --angle: 35deg;   animation-delay: .25s; }  /* 侯雯 — 右上 */
+  .member-card:nth-child(3) { --angle: 350deg;  animation-delay: .35s; }  /* 王泽宇 — 正上方偏右（填补右上空白）*/
+  .member-card:nth-child(4) { --angle: 105deg;  animation-delay: .45s; }  /* 赵智明 — 右下 */
+  .member-card:nth-child(5) { --angle: 195deg;  animation-delay: .55s; }  /* 王宜家 — 左下 */
+  .member-card:nth-child(6) { --angle: 255deg;  animation-delay: .65s; }  /* 张家瑄 — 左下偏底 */
+  .member-card:nth-child(7) { --angle: 305deg;  animation-delay: .75s; }  /* 李栋 — 正下方 */
 
   /* 非中心成员的定位 */
   .member-card:not(:nth-child(1)) {
-    --radius: 145px;
+    --radius: 160px;
     left: calc(50% + cos(var(--angle)) * var(--radius));
     top: calc(50% + sin(var(--angle)) * var(--radius));
   }
