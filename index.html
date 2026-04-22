@@ -236,6 +236,21 @@
     /* 轻微绿色环境光染色 */
     filter: drop-shadow(0 0 6px rgba(0,255,65,.15));
     transition: filter .3s;
+    /* ★ 关键：用 mask 挖掉面罩区域，只保留头盔边框 ★ */
+    -webkit-mask-image: radial-gradient(
+      circle at 50% 48%,
+      transparent 28%,
+      transparent 29%,
+      black 30%,
+      black 100%
+    );
+    mask-image: radial-gradient(
+      circle at 50% 48%,
+      transparent 28%,
+      transparent 29%,
+      black 30%,
+      black 100%
+    );
   }
   .helmet-frame:hover .helmet-img {
     filter: drop-shadow(0 0 14px rgba(0,255,65,.3));
