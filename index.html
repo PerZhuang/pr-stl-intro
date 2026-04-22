@@ -187,15 +187,15 @@
   }
   @keyframes blink { 50%{ opacity:0 } }
 
-  /* ══ BOOT SCREEN ══ */
+  /* ══ BOOT SCREEN — Pip-Boy Terminal ══ */
   #boot-screen {
     position: fixed;
     inset: 0;
-    /* 深绿色网格纹理背景，对标参考图 */
-    background: #0a130a;
+    /* 深绿色网格纹理背景 */
+    background: #080f08;
     background-image:
-      linear-gradient(rgba(0,255,65,.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,255,65,.04) 1px, transparent 1px);
+      linear-gradient(rgba(0,255,65,.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,65,.03) 1px, transparent 1px);
     background-size: 32px 32px;
     z-index: 9999;
     display: flex;
@@ -203,35 +203,214 @@
     justify-content: center;
     font-family: 'JetBrains Mono', 'Noto Sans SC', monospace;
   }
-  /* CRT scanline overlay */
-  #boot-screen::after {
+
+  /* ── Pip-Boy Device Shell (outer casing) ── */
+  #boot-device {
+    position: relative; z-index: 2;
+    display: flex;
+    /* 米色军规外壳 */
+    background: linear-gradient(145deg, #c4b896 0%, #a89b72 40%, #8f835c 100%);
+    border-radius: 20px;
+    padding: 14px 14px 14px 14px;
+    box-shadow:
+      0 0 0 2px #5c5438,
+      0 0 0 4px #3d3725,
+      0 12px 40px rgba(0,0,0,.6),
+      inset 0 2px 4px rgba(255,255,255,.15),
+      inset 0 -2px 4px rgba(0,0,0,.25);
+  }
+
+  /* 铆钉装饰（四角+边缘） */
+  .pip-rivet {
+    position: absolute;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #9e9474, #5c5438 60%, #3d3725);
+    box-shadow: inset 0 1px 2px rgba(0,0,0,.5), 0 1px 0 rgba(255,255,255,.1);
+  }
+  .pip-rivet.tl { top: 6px; left: 6px; }
+  .pip-rivet.tr { top: 6px; right: 6px; }
+  .pip-rivet.bl { bottom: 6px; left: 6px; }
+  .pip-rivet.br { bottom: 6px; right: 6px; }
+  .pip-rivet.tm { top: 6px; left: 50%; transform: translateX(-50%); }
+  .pip-rivet.bm { bottom: 6px; left: 50%; transform: translateX(-50%); }
+
+  /* 右侧控制面板 */
+  #boot-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-left: 10px;
+    padding: 8px 4px 8px 6px;
+  }
+  .pip-btn {
+    width: 38px;
+    height: 26px;
+    border-radius: 3px;
+    border: 1px solid #4a442e;
+    background: linear-gradient(180deg, #7a704e 0%, #5c5438 50%, #4a422c 100%);
+    color: #d4c8a0;
+    font-size: 7px;
+    font-weight: bold;
+    letter-spacing: .05em;
+    text-align: center;
+    line-height: 26px;
+    cursor: default;
+    box-shadow: 0 2px 3px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.1);
+    user-select: none;
+    text-transform: uppercase;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .pip-btn.active {
+    background: linear-gradient(180deg, #00cc55 0%, #008833 100%);
+    color: #002200;
+    box-shadow: 0 0 8px rgba(0,255,100,.4), 0 2px 3px rgba(0,0,0,.35);
+  }
+
+  /* 辐射值仪表盘 */
+  #pip-gauge {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    border: 2px solid #4a442e;
+    background: radial-gradient(circle, #1a2a1a 40%, #0d1a0d 100%);
+    margin: 4px auto;
+    position: relative;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,.6);
+  }
+  #pip-gauge::before {
+    content: '';
+    position: absolute;
+    width: 2px; height: 14px;
+    background: #ff6633;
+    bottom: 50%; left: 50%;
+    transform-origin: bottom center;
+    transform: translateX(-50%) rotate(-45deg);
+    border-radius: 1px;
+    box-shadow: 0 0 4px rgba(255,102,51,.6);
+    animation: gaugeWiggle 3s ease-in-out infinite;
+  }
+  #pip-gauge::after {
+    content: 'RADS';
+    position: absolute;
+    font-size: 5px;
+    color: #7a704e;
+    letter-spacing: .1em;
+    top: 50%; left: 50%;
+    transform: translate(-50%, 8px);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  @keyframes gaugeWiggle {
+    0%,100%{ transform:translateX(-50%)rotate(-30deg) }
+    50%{ transform:translateX(-50%)rotate(-60deg) }
+  }
+
+  /* TUNE 旋钮 */
+  #pip-knob {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    border: 2px solid #4a442e;
+    background: conic-gradient(from 220deg, #3d3725, #6b6244, #3d3725, #6b6244, #3d3725);
+    margin: 2px auto;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0,0,0,.4);
+  }
+  #pip-knob::after {
+    content: '';
+    position: absolute;
+    width: 2px; height: 8px;
+    background: #d4c8a0;
+    top: 4px; left: 50%;
+    transform: translateX(-50%);
+    border-radius: 1px;
+  }
+  #pip-knob-label {
+    font-size: 5.5px;
+    color: #7a704e;
+    text-align: center;
+    letter-spacing: .15em;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* POWER 按钮 */
+  #pip-power {
+    width: 38px; height: 30px;
+    border-radius: 50%;
+    border: 2px solid #4a442e;
+    background: radial-gradient(circle at 35% 35%, #ff9933, #cc5500 70%);
+    margin: 4px auto 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 5.5px;
+    font-weight: bold;
+    color: #331100;
+    letter-spacing: .1em;
+    box-shadow: 0 0 12px rgba(255,153,51,.5), 0 3px 6px rgba(0,0,0,.4);
+    animation: powerPulse 2s ease-in-out infinite;
+    font-family: 'JetBrains Mono', monospace;
+    cursor: default;
+  }
+  @keyframes powerPulse {
+    0%,100%{ box-shadow: 0 0 8px rgba(255,153,51,.4), 0 3px 6px rgba(0,0,0,.4); }
+    50%{ box-shadow: 0 0 18px rgba(255,153,51,.7), 0 3px 6px rgba(0,0,0,.4); }
+  }
+
+  /* CRT 屏幕区域（内层） */
+  #boot-frame {
+    position: relative;
+    width: min(640px, 78vw);
+    border: 3px solid #2a2515;
+    border-radius: 10px;
+    padding: 28px 36px 28px;
+    background: rgba(0,12,4,.92);
+    box-shadow:
+      inset 0 0 40px rgba(0,20,5,.8),
+      inset 0 0 80px rgba(0,30,8,.3);
+  }
+
+  /* PIP-OS 系统信息栏 */
+  #pip-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 9px;
+    letter-spacing: .15em;
+    color: #00aa44;
+    padding: 0 4px 10px;
+    border-bottom: 1px solid rgba(0,255,65,.2);
+    margin-bottom: 22px;
+    font-family: 'JetBrains Mono', monospace;
+    opacity: .75;
+  }
+  #pip-header-left {
+    display: flex;
+    gap: 12px;
+  }
+  #pip-header-right {
+    color: #007733;
+  }
+  /* CRT scanline overlay on screen area only */
+  #boot-frame::after {
     content: '';
     position: absolute; inset: 0;
+    border-radius: 10px;
     background: repeating-linear-gradient(
       0deg, transparent, transparent 3px,
       rgba(0,0,0,.18) 3px, rgba(0,0,0,.18) 4px
     );
     pointer-events: none; z-index: 1;
   }
-  /* 外层边框容器 */
-  #boot-frame {
-    position: relative; z-index: 2;
-    width: min(760px, 90vw);
-    border: 1px solid rgba(0,255,65,.35);
-    border-radius: 8px;
-    padding: 48px 52px 40px;
-    background: rgba(0,10,2,.82);
-    box-shadow: 0 0 0 1px rgba(0,255,65,.08), inset 0 0 60px rgba(0,20,5,.6);
-  }
+
   /* 标题 */
   #boot-title {
+    position: relative; z-index: 2;
     text-align: center;
-    font-size: clamp(20px, 3.2vw, 32px);
+    font-size: clamp(18px, 2.8vw, 28px);
     font-weight: bold;
     letter-spacing: .22em;
     color: #00ff88;
     text-shadow: 0 0 16px rgba(0,255,100,.7);
-    margin-bottom: 36px;
+    margin-bottom: 30px;
     line-height: 1;
   }
   #boot-cursor {
@@ -247,9 +426,10 @@
 
   /* 闪电图标 */
   #boot-icon {
+    position: relative; z-index: 2;
     text-align: center;
-    font-size: 48px;
-    margin-bottom: 28px;
+    font-size: 42px;
+    margin-bottom: 24px;
     line-height: 1;
     filter: drop-shadow(0 0 12px rgba(255,160,60,.7));
     animation: iconPulse 1.8s ease-in-out infinite;
@@ -261,6 +441,7 @@
 
   /* 进度条区域 */
   #boot-bar-wrap {
+    position: relative; z-index: 2;
     margin-bottom: 6px;
   }
   #boot-bar-track {
@@ -299,6 +480,7 @@
 
   /* 当前状态文字 */
   #boot-status {
+    position: relative; z-index: 2;
     text-align: center;
     font-size: clamp(12px, 1.8vw, 15px);
     color: #00ff55;
@@ -318,6 +500,7 @@
 
   /* 底部提示框 */
   #boot-tip {
+    position: relative; z-index: 2;
     border: 1px solid rgba(0,255,65,.3);
     border-radius: 3px;
     padding: 11px 18px;
@@ -443,27 +626,60 @@
   }, {once: true});
 </script>
 
-<!-- ══ BOOT SCREEN ══ -->
+<!-- ══ BOOT SCREEN — Pip-Boy Terminal ══ -->
 <div id="boot-screen">
-  <div id="boot-frame">
-    <!-- 标题 -->
-    <div id="boot-title">PR&nbsp;AI&#8209;STL&nbsp;TEAM<span id="boot-cursor"></span></div>
-    <!-- 闪电图标 -->
-    <div id="boot-icon">⚡</div>
-    <!-- 进度条 -->
-    <div id="boot-bar-wrap">
-      <div id="boot-bar-track">
-        <div id="boot-bar-fill"></div>
+  <!-- Pip-Boy Device Shell -->
+  <div id="boot-device">
+    <span class="pip-rivet tl"></span>
+    <span class="pip-rivet tr"></span>
+    <span class="pip-rivet bl"></span>
+    <span class="pip-rivet br"></span>
+    <span class="pip-rivet tm"></span>
+    <span class="pip-rivet bm"></span>
+
+    <!-- CRT Screen Area -->
+    <div id="boot-frame">
+      <!-- PIP-OS Header -->
+      <div id="pip-header">
+        <div id="pip-header-left">
+          <span>PIP-OS(R)</span>
+          <span>V7.1.0.0</span>
+        </div>
+        <div id="pip-header-right">ROBOCO IND.</div>
       </div>
-      <div id="boot-bar-labels">
-        <span>PROGRESS</span>
-        <span id="boot-pct">0%</span>
+
+      <!-- 标题 -->
+      <div id="boot-title">PR&nbsp;AI&#8209;STL&nbsp;TEAM<span id="boot-cursor"></span></div>
+      <!-- 闪电图标 -->
+      <div id="boot-icon">⚡</div>
+      <!-- 进度条 -->
+      <div id="boot-bar-wrap">
+        <div id="boot-bar-track">
+          <div id="boot-bar-fill"></div>
+        </div>
+        <div id="boot-bar-labels">
+          <span>PROGRESS</span>
+          <span id="boot-pct">0%</span>
+        </div>
       </div>
+      <!-- 当前状态 -->
+      <div id="boot-status">Initializing...<span id="boot-status-cursor"></span></div>
+      <!-- 底部提示 -->
+      <div id="boot-tip">Did you know? AI is transforming how PR teams work — one workflow at a time.</div>
     </div>
-    <!-- 当前状态 -->
-    <div id="boot-status">Initializing...<span id="boot-status-cursor"></span></div>
-    <!-- 底部提示 -->
-    <div id="boot-tip">Did you know? AI is transforming how PR teams work — one workflow at a time.</div>
+
+    <!-- Right Control Panel -->
+    <div id="boot-controls">
+      <div class="pip-btn active">STAT</div>
+      <div class="pip-btn">INV</div>
+      <div class="pip-btn">DATA</div>
+      <div class="pip-btn">MAP</div>
+      <div class="pip-btn">RADIO</div>
+      <div id="pip-gauge"></div>
+      <div id="pip-knob"></div>
+      <div id="pip-knob-label">TUNE</div>
+      <div id="pip-power">PWR</div>
+    </div>
   </div>
 </div>
 
