@@ -258,6 +258,76 @@
     font-size: 9px;
   }
 
+  /* ── Module Cards (弹出式模块展示) ── */
+  .module-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px;
+    padding: 8px 10px 4px;
+    max-width: 580px;
+    margin: 0 auto;
+  }
+  .module-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(0,20,6,.55);
+    border: 1px solid rgba(0,255,65,.25);
+    border-radius: 8px;
+    padding: 12px 18px;
+    min-width: 240px;
+    max-width: 280px;
+    opacity: 0;
+    transform: translateY(24px) scale(.92);
+    animation: modulePopIn .45s cubic-bezier(.34,1.56,.64,1) forwards;
+    box-shadow:
+      0 0 12px rgba(0,255,65,.08),
+      0 4px 16px rgba(0,0,0,.3),
+      inset 0 0 20px rgba(0,255,65,.04);
+    transition: transform .25s, box-shadow .25s, border-color .25s;
+    cursor: default;
+  }
+  .module-card:hover {
+    transform: scale(1.03);
+    border-color: rgba(0,255,65,.55);
+    box-shadow:
+      0 0 22px rgba(0,255,65,.2),
+      0 6px 24px rgba(0,0,0,.35),
+      inset 0 0 28px rgba(0,255,65,.08);
+  }
+  @keyframes modulePopIn {
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .module-icon {
+    font-size: 26px;
+    line-height: 1;
+    flex-shrink: 0;
+    filter: drop-shadow(0 0 6px rgba(0,255,65,.4));
+  }
+  .module-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .module-title {
+    font-size: 15px;
+    font-weight: bold;
+    color: #44ff77;
+    letter-spacing: .06em;
+    text-shadow: 0 0 8px rgba(68,255,119,.5);
+    white-space: nowrap;
+  }
+  .module-desc {
+    font-size: 11px;
+    color: #00bb44;
+    letter-spacing: .03em;
+    line-height: 1.35;
+    white-space: normal;
+  }
+
   @keyframes memberIn {
     from { opacity: 0; transform: translate(-50%, -50%) scale(.6); }
     to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
@@ -826,22 +896,18 @@ const script = [
   ]},
   {type:'blank',    delay:100},
   {type:'normal',   text:'我们以"最小化"原则运行，',speed:38, waitAudio:true, audioId:'b'},
-  {type:'normal',   text:'不开会、不填表，只做一件事——',speed:38},
-  {type:'highlight',text:'把 AI 工具真正用起来，',speed:42},
-  {type:'normal',   text:'探索人 + Agent 对工作流程的改变，',speed:38},
-  {type:'normal',   text:'帮 PR 的每一项工作变得更快、更有力。',speed:38},
+      {type:'normal',   text:'探索人 + Agent 对工作流程的改变，',speed:38},
+  {type:'normal',   text:'助力 PR 每一项工作提效增速。',speed:38},
   {type:'blank',    delay:120},
   {type:'dim',      text:'──────────────────────────────',speed:6},
   {type:'blank',    delay:120},
-  {type:'section',  text:'// 当中文成为新的编程语言',speed:38, waitAudio:true, audioId:'c'},
-  {type:'section',  text:'// 这是我们的机会，也是我们的新起点。',speed:38},
-  {type:'blank',    delay:120},
-  {type:'prompt',   text:'> 上线工具（含开发中）↓',speed:30,delay:80, waitAudio:true, audioId:'d'},
+      {type:'blank',    delay:120},
+  {type:'prompt',   text:'> 上线工具（含开发中）',speed:30,delay:80, waitAudio:true, audioId:'d'},
   {type:'blank'},
-  {type:'case',text:'[ 舆情模块 ]  AI 数据接口 + 虾自动调用，舆情追踪提速',speed:20},
-  {type:'case',text:'[ 内容模块 ]  通稿 Agent、审稿 Agent 开发中，作业效率提升',speed:20},
-  {type:'case',text:'[ 新媒体模块 ] 口播号小助手，新媒体分发内容自动拆分',speed:20},
-  {type:'case',text:'[ BP 模块   ]  Agent 全流程辅助，热点追踪 & 选题策划',speed:20},
+  {type:'module',   icon:'📡', title:'舆情模块', desc:'AI 数据接口 + 虾自动调用，舆情追踪提速', delay:0},
+  {type:'module',   icon:'✍️', title:'内容模块', desc:'通稿 Agent、审稿 Agent 开发中，作业效率提升', delay:120},
+  {type:'module',   icon:'📱', title:'新媒体模块', desc:'口播号小助手，新媒体分发内容自动拆分', delay:240},
+  {type:'module',   icon:'📊', title:'BP 模块', desc:'Agent 全流程辅助，热点追踪 & 选题策划', delay:360},
   {type:'blank'},
   {type:'dim',      text:'──────────────────────────────',speed:6},
   {type:'blank',    delay:120},
@@ -893,9 +959,7 @@ async function runScript() {
         img.src=m.img; img.alt=m.name;
         img.loading='lazy';
         card.appendChild(img);
-        img.className='member-avatar';
-        img.src=m.img; img.alt=m.name;
-        img.loading='lazy';
+
         const name=document.createElement('div');
         name.className='member-name'; name.textContent=m.name;
         card.appendChild(name);
@@ -911,12 +975,61 @@ async function runScript() {
       terminal.appendChild(wrap);
       content.scrollTop=content.scrollHeight;
 
-      // touch effect on the wrapper
       aimAt(wrap);
       wrap.classList.add('touch-appear');
 
-      // wait for all animations to mostly complete
       await sleep(1000);
+      continue;
+    }
+
+    // ── module cards: pop-in style ──
+    if (item.type==='module') {
+      if (item.delay) await sleep(item.delay);
+
+      // Create module grid container (only once, reuse if exists)
+      let mgrid = document.getElementById('module-grid-container');
+      if (!mgrid) {
+        const mgWrap = document.createElement('div');
+        mgWrap.className='line';
+        mgWrap.style.opacity='1';
+        mgWrap.style.textAlign='center';
+        mgrid = document.createElement('div');
+        mgrid.id = 'module-grid-container';
+        mgrid.className = 'module-grid';
+        mgWrap.appendChild(mgrid);
+        terminal.appendChild(mgWrap);
+        content.scrollTop=content.scrollHeight;
+      }
+
+      const card = document.createElement('div');
+      card.className = 'module-card';
+
+      const icon = document.createElement('span');
+      icon.className = 'module-icon';
+      icon.textContent = item.icon || '📦';
+      card.appendChild(icon);
+
+      const body = document.createElement('div');
+      body.className = 'module-body';
+
+      const title = document.createElement('div');
+      title.className = 'module-title';
+      title.textContent = item.title;
+      body.appendChild(title);
+
+      const desc = document.createElement('div');
+      desc.className = 'module-desc';
+      desc.textContent = item.desc;
+      body.appendChild(desc);
+
+      card.appendChild(body);
+      mgrid.appendChild(card);
+
+      content.scrollTop=content.scrollHeight;
+
+      aimAt(card);
+      card.classList.add('touch-appear');
+
       continue;
     }
 
