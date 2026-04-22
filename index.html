@@ -190,15 +190,17 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
-  /* ── Member Cards Grid (3-2-2 staggered) ── */
+  /* ── Member Cards Grid: center person + 7 around ── */
   .members-grid {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 20px 28px;
-    padding: 16px 10px 8px;
-    max-width: 560px;
+    align-items: center;
+    gap: 18px 24px;
+    padding: 20px 10px 8px;
+    max-width: 640px;
     margin: 0 auto;
+    position: relative;
   }
   .member-card {
     display: flex;
@@ -209,13 +211,45 @@
     transform: translateY(16px);
     animation: memberIn .5s ease-out forwards;
   }
-  .member-card:nth-child(1) { animation-delay: .1s; }
-  .member-card:nth-child(2) { animation-delay: .2s; }
-  .member-card:nth-child(3) { animation-delay: .3s; }
-  .member-card:nth-child(4) { animation-delay: .45s; margin-left: 40px; }
-  .member-card:nth-child(5) { animation-delay: .55s; }
-  .member-card:nth-child(6) { animation-delay: .7s; margin-left: 40px; }
-  .member-card:nth-child(7) { animation-delay: .8s; }
+
+  /* ★ 周桓 — 居中核心人物（第1个）★ */
+  .member-card:nth-child(1) {
+    order: 1;
+    width: 130px;
+    animation-delay: .15s;
+    /* 居中独占一行 */
+    width: 100%;
+    margin-bottom: 4px;
+  }
+  .member-card:nth-child(1) .member-avatar {
+    width: 100px; height: 100px;
+    border-width: 3px;
+    border-color: rgba(0,255,65,.55);
+    box-shadow:
+      0 0 18px rgba(0,255,65,.35),
+      0 0 36px rgba(0,255,65,.15),
+      inset 0 0 12px rgba(0,255,65,.1);
+  }
+  .member-card:nth-child(1) .member-name {
+    font-size: 15px;
+    color: #44ff77;
+    text-shadow: 0 0 10px rgba(68,255,119,.7);
+  }
+  .member-card:nth-child(1) .member-role {
+    font-size: 11px;
+    color: #00bb44;
+  }
+
+  /* 上排3人：侯雯 王泽宇 赵智明 */
+  .member-card:nth-child(2) { order: 2; animation-delay: .25s; }
+  .member-card:nth-child(3) { order: 3; animation-delay: .35s; }
+  .member-card:nth-child(4) { order: 4; animation-delay: .45s; }
+
+  /* 下排4人：王宜家 张家瑄 赵力 李栋 */
+  .member-card:nth-child(5) { order: 5; animation-delay: .55s; }
+  .member-card:nth-child(6) { order: 6; animation-delay: .65s; }
+  .member-card:nth-child(7) { order: 7; animation-delay: .75s; }
+  .member-card:nth-child(8) { order: 8; animation-delay: .85s; }
 
   @keyframes memberIn {
     to { opacity: 1; transform: translateY(0); }
@@ -773,6 +807,7 @@ const script = [
   {type:'highlight',text:'跨模块的虚拟团队。',speed:45},
   {type:'blank',    delay:80},
   {type:'members',  data:[
+    {name:'周桓',   role:'负责人', img:'members/周桓-负责人.png'},
     {name:'侯雯',   role:'BP',     img:'members/侯雯-BP.png'},
     {name:'王泽宇', role:'BP',     img:'members/王泽宇-BP.png'},
     {name:'赵智明', role:'媒介',   img:'members/赵智明-媒介.png'},
