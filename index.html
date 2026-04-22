@@ -187,47 +187,40 @@
   .member-card:nth-child(7) { animation-delay: .8s; }
 
   @keyframes memberIn {
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translate(-50%, -50%) scale(.6); }
+    to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
   }
 
-  /* ── Member Cards Grid: center person + 7 around ── */
+  /* ── Member Cards: 周桓居中 + 7人环绕轨道排列 ── */
   .members-grid {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    gap: 18px 24px;
-    padding: 20px 10px 8px;
-    max-width: 640px;
-    margin: 0 auto;
     position: relative;
+    width: 340px;
+    height: 360px;
+    margin: 20px auto;
   }
   .member-card {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 100px;
     opacity: 0;
-    transform: translateY(16px);
     animation: memberIn .5s ease-out forwards;
+    position: absolute;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
   }
 
-  /* ★ 周桓 — 居中核心人物（第1个）★ */
+  /* ★ 周桓 — 圆心（第1个）★ */
   .member-card:nth-child(1) {
-    order: 1;
-    width: 130px;
+    z-index: 10;
     animation-delay: .15s;
-    /* 居中独占一行 */
-    width: 100%;
-    margin-bottom: 4px;
   }
   .member-card:nth-child(1) .member-avatar {
     width: 100px; height: 100px;
     border-width: 3px;
     border-color: rgba(0,255,65,.55);
     box-shadow:
-      0 0 18px rgba(0,255,65,.35),
-      0 0 36px rgba(0,255,65,.15),
+      0 0 22px rgba(0,255,65,.4),
+      0 0 44px rgba(0,255,65,.15),
       inset 0 0 12px rgba(0,255,65,.1);
   }
   .member-card:nth-child(1) .member-name {
@@ -235,24 +228,39 @@
     color: #44ff77;
     text-shadow: 0 0 10px rgba(68,255,119,.7);
   }
+  /* 周桓不显示角色标签 */
   .member-card:nth-child(1) .member-role {
-    font-size: 11px;
-    color: #00bb44;
+    display: none;
   }
 
-  /* 上排3人：侯雯 王泽宇 赵智明 */
-  .member-card:nth-child(2) { order: 2; animation-delay: .25s; }
-  .member-card:nth-child(3) { order: 3; animation-delay: .35s; }
-  .member-card:nth-child(4) { order: 4; animation-delay: .45s; }
+  /* ── 轨道成员：围绕圆心散开（半径 ~140px）── */
+  .member-card:nth-child(2) { --angle: 25deg;   animation-delay: .25s; }  /* 侯雯 */
+  .member-card:nth-child(3) { --angle: 75deg;   animation-delay: .35s; }  /* 王泽宇 */
+  .member-card:nth-child(4) { --angle: 130deg;  animation-delay: .45s; }  /* 赵智明 */
+  .member-card:nth-child(5) { --angle: 180deg;  animation-delay: .55s; }  /* 王宜家 */
+  .member-card:nth-child(6) { --angle: 225deg;  animation-delay: .65s; }  /* 张家瑄 */
+  .member-card:nth-child(7) { --angle: 280deg;  animation-delay: .75s; }  /* 赵力 */
+  .member-card:nth-child(8) { --angle: 330deg;  animation-delay: .85s; }  /* 李栋 */
 
-  /* 下排4人：王宜家 张家瑄 赵力 李栋 */
-  .member-card:nth-child(5) { order: 5; animation-delay: .55s; }
-  .member-card:nth-child(6) { order: 6; animation-delay: .65s; }
-  .member-card:nth-child(7) { order: 7; animation-delay: .75s; }
-  .member-card:nth-child(8) { order: 8; animation-delay: .85s; }
+  /* 非中心成员的定位 */
+  .member-card:not(:nth-child(1)) {
+    --radius: 145px;
+    left: calc(50% + cos(var(--angle)) * var(--radius));
+    top: calc(50% + sin(var(--angle)) * var(--radius));
+  }
+  .member-card:not(:nth-child(1)) .member-avatar {
+    width: 72px; height: 72px;
+  }
+  .member-card:not(:nth-child(1)) .member-name {
+    font-size: 11px;
+  }
+  .member-card:not(:nth-child(1)) .member-role {
+    font-size: 9px;
+  }
 
   @keyframes memberIn {
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translate(-50%, -50%) scale(.6); }
+    to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
   }
 
   .member-avatar {
