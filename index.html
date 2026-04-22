@@ -190,70 +190,55 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
-  /* ★ Astronaut Helmet Frame (using helmet-frame.png overlay) ★ */
-  .helmet-frame {
-    position: relative;
-    width: 110px; height: 144px;
-    /* 容器本身透明，只用于定位 */
-    background: transparent;
-    transition: transform .3s;
+  /* ── Member Cards Grid (3-2-2 staggered) ── */
+  .members-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px 28px;
+    padding: 16px 10px 8px;
+    max-width: 560px;
+    margin: 0 auto;
   }
-  .helmet-frame:hover {
-    transform: scale(1.08);
+  .member-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100px;
+    opacity: 0;
+    transform: translateY(16px);
+    animation: memberIn .5s ease-out forwards;
+  }
+  .member-card:nth-child(1) { animation-delay: .1s; }
+  .member-card:nth-child(2) { animation-delay: .2s; }
+  .member-card:nth-child(3) { animation-delay: .3s; }
+  .member-card:nth-child(4) { animation-delay: .45s; margin-left: 40px; }
+  .member-card:nth-child(5) { animation-delay: .55s; }
+  .member-card:nth-child(6) { animation-delay: .7s; margin-left: 40px; }
+  .member-card:nth-child(7) { animation-delay: .8s; }
+
+  @keyframes memberIn {
+    to { opacity: 1; transform: translateY(0); }
   }
 
-  /* 头像：圆形裁切，定位在头盔面罩区域内 */
   .member-avatar {
-    position: absolute;
-    width: 76px; height: 76px;
+    width: 80px; height: 80px;
     border-radius: 50%;
     object-fit: cover;
-    /* 居中偏上，对齐头盔面罩 */
-    top: 18px; left: 50%;
-    transform: translateX(-50%);
-    border: none;
+    border: 2px solid rgba(0,255,65,.4);
     box-shadow:
-      0 0 15px rgba(0,255,65,.1),
-      inset 0 0 12px rgba(0,20,5,.25);
+      0 0 12px rgba(0,255,65,.25),
+      0 0 24px rgba(0,255,65,.1),
+      inset 0 0 8px rgba(0,255,65,.08);
     background: #001a04;
-    z-index: 1;
-    transition: box-shadow .3s;
+    transition: border-color .3s, box-shadow .3s, transform .3s;
   }
-  .helmet-frame:hover .member-avatar {
+  .member-avatar:hover {
+    border-color: rgba(0,255,65,.7);
     box-shadow:
-      0 0 22px rgba(0,255,65,.2),
-      inset 0 0 12px rgba(0,20,5,.25);
-  }
-
-  /* ★ 头盔图片：叠在头像上方作为边框 ★ */
-  .helmet-img {
-    position: absolute;
-    /* 等比放大到填满容器 */
-    width: 100%; height: 100%;
-    top: 0; left: 0;
-    z-index: 2;
-    pointer-events: none;
-    /* 轻微绿色环境光染色 */
-    filter: drop-shadow(0 0 6px rgba(0,255,65,.15));
-    transition: filter .3s;
-    /* ★ 关键：用 mask 挖掉面罩区域，只保留头盔边框 ★ */
-    -webkit-mask-image: radial-gradient(
-      circle at 50% 48%,
-      transparent 28%,
-      transparent 29%,
-      black 30%,
-      black 100%
-    );
-    mask-image: radial-gradient(
-      circle at 50% 48%,
-      transparent 28%,
-      transparent 29%,
-      black 30%,
-      black 100%
-    );
-  }
-  .helmet-frame:hover .helmet-img {
-    filter: drop-shadow(0 0 14px rgba(0,255,65,.3));
+      0 0 18px rgba(0,255,65,.45),
+      0 0 36px rgba(0,255,65,.2);
+    transform: scale(1.06);
   }
 
   .member-name {
@@ -860,24 +845,11 @@ async function runScript() {
         const card=document.createElement('div');
         card.className='member-card';
 
-        // Helmet frame (astronaut helmet overlay)
-        const frame=document.createElement('div');
-        frame.className='helmet-frame';
-
         const img=document.createElement('img');
         img.className='member-avatar';
         img.src=m.img; img.alt=m.name;
         img.loading='lazy';
-        frame.appendChild(img);
-
-        // Helmet illustration overlaid on top
-        const helmet=document.createElement('img');
-        helmet.className='helmet-img';
-        helmet.src='helmet-frame.png';
-        helmet.alt='';
-        helmet.draggable=false;
-        frame.appendChild(helmet);
-        card.appendChild(frame);
+        card.appendChild(img);
         img.className='member-avatar';
         img.src=m.img; img.alt=m.name;
         img.loading='lazy';
