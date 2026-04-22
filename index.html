@@ -159,6 +159,73 @@
   .line.status   { color:#00ff41; font-size:19px; text-align:center;
     letter-spacing:3px; text-shadow:0 0 12px #00ff41; }
 
+  /* ── Member Cards Grid (3-2-2 staggered) ── */
+  .members-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px 28px;
+    padding: 16px 10px 8px;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+  .member-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100px;
+    opacity: 0;
+    transform: translateY(16px);
+    animation: memberIn .5s ease-out forwards;
+  }
+  .member-card:nth-child(1) { animation-delay: .1s; }
+  .member-card:nth-child(2) { animation-delay: .2s; }
+  .member-card:nth-child(3) { animation-delay: .3s; }
+  .member-card:nth-child(4) { animation-delay: .45s; margin-left: 40px; }
+  .member-card:nth-child(5) { animation-delay: .55s; }
+  .member-card:nth-child(6) { animation-delay: .7s; margin-left: 40px; }
+  .member-card:nth-child(7) { animation-delay: .8s; }
+
+  @keyframes memberIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .member-avatar {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(0,255,65,.4);
+    box-shadow:
+      0 0 12px rgba(0,255,65,.25),
+      0 0 24px rgba(0,255,65,.1),
+      inset 0 0 8px rgba(0,255,65,.08);
+    background: #001a04;
+    transition: border-color .3s, box-shadow .3s;
+  }
+  .member-avatar:hover {
+    border-color: rgba(0,255,65,.7);
+    box-shadow:
+      0 0 18px rgba(0,255,65,.45),
+      0 0 36px rgba(0,255,65,.2);
+  }
+
+  .member-name {
+    margin-top: 8px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #00ff66;
+    letter-spacing: .08em;
+    text-shadow: 0 0 6px rgba(0,255,102,.5);
+    text-align: center;
+  }
+  .member-role {
+    font-size: 10px;
+    color: #009933;
+    letter-spacing: .1em;
+    text-align: center;
+    margin-top: 2px;
+  }
+
   /* touch-appear: pink flash when a line is "touched" into existence */
   @keyframes touchAppear {
     0%  { text-shadow: -2px 0 rgba(255,80,180,.9), 2px 0 rgba(255,200,230,.9),
@@ -672,6 +739,16 @@ const script = [
   {type:'normal',   text:'PR AI-STL 小组，',speed:38, audioId:'a'},
   {type:'normal',   text:'是一支来自舆情、内容、BP、媒介各条线的',speed:35},
   {type:'highlight',text:'跨模块的虚拟团队。',speed:45},
+  {type:'blank',    delay:80},
+  {type:'members',  data:[
+    {name:'侯雯',   role:'BP',     img:'members/侯雯-BP.png'},
+    {name:'王泽宇', role:'BP',     img:'members/王泽宇-BP.png'},
+    {name:'赵智明', role:'媒介',   img:'members/赵智明-媒介.png'},
+    {name:'王宜家', role:'舆情',   img:'members/王宜家-舆情.png'},
+    {name:'张家瑄', role:'舆情',   img:'members/张家瑄-舆情.png'},
+    {name:'赵力',   role:'内容',   img:'members/赵力-内容.png'},
+    {name:'李栋',   role:'内容',   img:'members/李栋-内容.png'}
+  ]},
   {type:'blank',    delay:100},
   {type:'normal',   text:'我们以"最小化"原则运行，',speed:38, waitAudio:true, audioId:'b'},
   {type:'normal',   text:'不开会、不填表，只做一件事——',speed:38},
@@ -720,6 +797,50 @@ async function runScript() {
       terminal.appendChild(b);
       content.scrollTop=content.scrollHeight;
       await sleep(160); continue;
+    }
+
+    // ── members grid: show team photos ──
+    if (item.type==='members') {
+      const wrap=document.createElement('div');
+      wrap.className='line';
+      wrap.style.opacity='1';
+      wrap.style.textAlign='center';
+
+      const grid=document.createElement('div');
+      grid.className='members-grid';
+
+      item.data.forEach(m => {
+        const card=document.createElement('div');
+        card.className='member-card';
+
+        const img=document.createElement('img');
+        img.className='member-avatar';
+        img.src=m.img; img.alt=m.name;
+        img.loading='lazy';
+        card.appendChild(img);
+
+        const name=document.createElement('div');
+        name.className='member-name'; name.textContent=m.name;
+        card.appendChild(name);
+
+        const role=document.createElement('div');
+        role.className='member-role'; role.textContent=m.role;
+        card.appendChild(role);
+
+        grid.appendChild(card);
+      });
+
+      wrap.appendChild(grid);
+      terminal.appendChild(wrap);
+      content.scrollTop=content.scrollHeight;
+
+      // touch effect on the wrapper
+      aimAt(wrap);
+      wrap.classList.add('touch-appear');
+
+      // wait for all animations to mostly complete
+      await sleep(1000);
+      continue;
     }
 
     const lineEl=document.createElement('div');
