@@ -628,10 +628,10 @@
     window._audioUnlocked = true;
     this.style.display = 'none';
     document.body.style.cursor = 'none';  // 隐藏鼠标，配合录制
-    // 预热所有 audio 元素（解锁浏览器自动播放限制）
+    // 预热 audio 元素（解锁浏览器自动播放限制）— 静音防爆音
     ['a','b','c','d','e'].forEach(id => {
       const a = document.getElementById('audio-' + id);
-      if (a) { a.play().then(() => a.pause()).catch(() => {}); }
+      if (a) { a.volume = 0; a.play().then(() => { a.volume = 1; a.pause(); }).catch(() => {}); }
     });
     // 点击后启动所有动画
     window._matrixInterval = setInterval(drawMatrix, 40);
